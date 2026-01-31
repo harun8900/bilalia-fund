@@ -3,51 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي - الإدارة الشاملة</title>
+    <title>تطبيق صندوق البلالية الطبي | الشامل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-body: #060b1d;
-            --card-bg: #10192e;
+            --bg-body: #050a18;
+            --card-bg: #0f172a;
             --accent-blue: #00d2ff;
             --accent-green: #00e676;
             --danger: #ff5252;
             --gold: #ffd700;
+            --text-dim: #94a3b8;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); color: white; margin: 0; padding: 0; }
         .header { padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
         .dev-name { color: var(--accent-blue); font-size: 14px; font-weight: bold; margin-top: 5px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
-        /* Stats Dashboard */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-card span { display: block; font-size: 22px; font-weight: bold; margin-top: 5px; }
+        /* Dashboard Stats */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .stat-card span { display: block; font-size: 20px; font-weight: bold; margin-top: 8px; }
 
-        /* Sections */
-        .section { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .section-title { border-right: 4px solid var(--accent-blue); padding-right: 12px; color: var(--accent-blue); font-weight: bold; margin-bottom: 15px; }
-
-        /* Admin Controls */
-        .admin-lock-zone { background: rgba(0,210,255,0.05); padding: 20px; border-radius: 15px; border: 1px dashed var(--accent-blue); text-align: center; margin-bottom: 20px; }
-        input, select { background: #1a253d; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; margin: 5px; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        /* Admin Section */
+        .admin-lock-zone { background: rgba(0,210,255,0.03); padding: 25px; border-radius: 15px; border: 1px dashed var(--accent-blue); margin-bottom: 25px; }
+        input, select { background: #1a253d; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; margin: 5px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent-blue); }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-blue { background: var(--accent-blue); color: #000; }
         .btn-gold { background: var(--gold); color: #000; }
-        .btn-del { background: var(--danger); color: white; font-size: 11px; padding: 5px; }
+        .btn-del { background: var(--danger); color: white; font-size: 11px; padding: 6px 12px; }
         
         .hidden { display: none !important; }
 
-        /* Tables */
-        .month-block { margin-bottom: 40px; border: 1px solid rgba(0,210,255,0.2); border-radius: 15px; overflow: hidden; }
-        .month-header { background: #1a253d; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        table { width: 100%; border-collapse: collapse; background: var(--card-bg); }
-        th { background: #152036; color: var(--accent-blue); padding: 12px; text-align: right; font-size: 14px; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        /* Tables & Month Blocks */
+        .month-block { margin-bottom: 40px; border: 1px solid rgba(0,210,255,0.15); border-radius: 18px; overflow: hidden; background: var(--card-bg); }
+        .month-header { background: #152036; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(255,255,255,0.02); color: var(--text-dim); padding: 12px; text-align: right; font-size: 13px; font-weight: 500; }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
 
-        .rules-box { font-size: 13px; color: #cbd5e1; line-height: 1.6; }
-        .manager-tag { background: #1a253d; padding: 4px 12px; border-radius: 15px; font-size: 12px; margin: 3px; display: inline-block; border: 1px solid var(--accent-blue); }
-        footer { text-align: center; padding: 40px; color: #64748b; font-size: 12px; }
+        /* Management & Rules */
+        .section-title { border-right: 4px solid var(--accent-blue); padding-right: 12px; color: var(--accent-blue); font-weight: bold; margin-bottom: 15px; }
+        .manager-tag { background: #1a253d; padding: 4px 12px; border-radius: 15px; font-size: 12px; margin: 3px; display: inline-block; border: 1px solid rgba(0,210,255,0.3); }
+        footer { text-align: center; padding: 50px; color: #475569; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -59,39 +58,47 @@
 
 <div class="container">
     <div class="dashboard">
-        <div class="stat-card">إجمالي المشتركين <span id="total-m-count">0</span></div>
-        <div class="stat-card">إجمالي الليرة (SYP) <span id="total-syp-val" style="color:var(--accent-green)">0</span></div>
-        <div class="stat-card">إجمالي الدولار (USD) <span id="total-usd-val" style="color:var(--gold)">0</span></div>
-        <div class="stat-card">إجمالي المصروفات <span id="total-exp-val" style="color:var(--danger)">0</span></div>
+        <div class="stat-card">إجمالي المدخرات (ليرة) <span id="total-syp-val" style="color:var(--accent-green)">0</span></div>
+        <div class="stat-card">إجمالي المدخرات (دولار) <span id="total-usd-val" style="color:var(--gold)">0</span></div>
+        <div class="stat-card">إجمالي المصروفات <span id="total-exp-syp" style="color:var(--danger)">0 ل.س</span></div>
+        <div class="stat-card">إجمالي المصروفات <span id="total-exp-usd" style="color:#ff8c00">0 $</span></div>
     </div>
 
     <div class="admin-lock-zone">
-        <div id="lock-ui">
-            <input type="password" id="pass-input" placeholder="كلمة السر للإدارة">
-            <button class="btn btn-blue" onclick="activateAdmin()">تفعيل وضع التحرير</button>
+        <div id="lock-ui" style="text-align: center;">
+            <p><i class="fas fa-shield-alt"></i> منطقة الإدارة محمية</p>
+            <input type="password" id="pass-input" placeholder="كلمة السر">
+            <button class="btn btn-blue" onclick="activateAdmin()">تفعيل التحكم</button>
         </div>
+        
         <div id="admin-ui" class="hidden">
-            <h3 style="color:var(--accent-green)">وضع التحرير مفعل ✅</h3>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                <input type="text" id="month-name" placeholder="اسم الشهر (مثلاً: يناير 2026)">
-                <button class="btn btn-gold" onclick="addNewMonth()">إضافة شهر جديد</button>
-                <button class="btn btn-del" onclick="window.location.reload()">قفل الإدارة</button>
+            <div style="border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 15px;">
+                <h4 style="color:var(--accent-green); margin:0 0 10px 0;">أدوات الإدارة المتقدمة:</h4>
+                <input type="text" id="month-name" placeholder="اسم الشهر (مثلاً: فبراير 2026)">
+                <button class="btn btn-gold" onclick="addNewMonth()"><i class="fas fa-plus"></i> إضافة شهر جديد</button>
+                <button class="btn btn-del" onclick="window.location.reload()">إغلاق اللوحة</button>
             </div>
-            <div id="entry-tools" style="margin-top:15px; border-top:1px solid #334155; padding-top:10px;">
-                <select id="target-month-select"></select>
-                <input type="text" id="person-name" placeholder="اسم المشترك">
-                <input type="number" id="person-amount" placeholder="المبلغ">
-                <select id="person-cur"><option value="SYP">ليرة</option><option value="USD">دولار</option></select>
-                <button class="btn btn-blue" onclick="addItem('member')">إضافة مشترك</button>
-                <button class="btn btn-del" onclick="addItem('expense')" style="background:orange; color:black">إضافة مصروف</button>
+            
+            <div id="entry-form">
+                <select id="target-month-select" style="border-color: var(--gold)"></select>
+                <input type="text" id="item-name" placeholder="الاسم أو بيان الصرف" style="width: 200px;">
+                <input type="number" id="item-amount" placeholder="المبلغ">
+                <select id="item-cur">
+                    <option value="SYP">ليرة سورية</option>
+                    <option value="USD">دولار أمريكي</option>
+                </select>
+                <button class="btn btn-blue" onclick="saveToDB('member')">إضافة مشترك</button>
+                <button class="btn btn-gold" onclick="saveToDB('expense')" style="background:#ff4757; color:white">إضافة مصروف</button>
             </div>
         </div>
     </div>
 
-    <div class="section rules-box">
-        <div class="section-title">شروط وقوانين الصندوق</div>
-        <p>قال تعالى: (وتعاونوا على البر والتقوى). الصندوق تأمين صحي للأعضاء (وفاة، عمليات، حوادث). لا يغطي الدواء. الحد الأدنى 25 ألف ليرة شهرياً.</p>
-        <div>
+    <div style="background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05);">
+        <div class="section-title">إدارة الصندوق وشروطه</div>
+        <p style="font-size: 13px; color: var(--text-dim); line-height: 1.6;">
+            قال تعالى: (وتعاونوا على البر والتقوى). الصندوق تأمين طبي للأعضاء (وفاة، عمليات، حوادث). لا يغطي الدواء. الحد الأدنى 25 ألف ليرة شهرياً. يتم الصرف بقرار الإدارة.
+        </p>
+        <div id="mgrs">
             <span class="manager-tag">قاسم طالب</span> <span class="manager-tag">رامي باكير</span>
             <span class="manager-tag">حسن الخطيب</span> <span class="manager-tag">ضياء شحادة</span>
             <span class="manager-tag">نورس عبد السلام</span> <span class="manager-tag">محمد قويدر</span>
@@ -99,122 +106,124 @@
         </div>
     </div>
 
-    <button class="btn btn-gold" style="width:100%; margin-bottom:20px;" onclick="document.getElementById('all-months-container').classList.toggle('show-exp')">إظهار/إخفاء المصروفات في الجداول</button>
-
-    <div id="all-months-container"></div>
+    <button class="btn btn-gold" style="width:100%; margin-bottom:20px; justify-content:center;" onclick="document.body.classList.toggle('hide-expenses')">إظهار / إخفاء سجلات المصروفات</button>
+    <div id="main-content-area"></div>
 </div>
 
 <footer> Muhammed Harun 2026® </footer>
 
 <script>
-    let appData = JSON.parse(localStorage.getItem('bilalia_pro_db')) || [];
-    let isEditMode = false;
+    let db = JSON.parse(localStorage.getItem('bilalia_final_v1')) || [];
+    let isEdit = false;
 
     function activateAdmin() {
         if(document.getElementById('pass-input').value === 'هارون456') {
-            isEditMode = true;
+            isEdit = true;
             document.getElementById('lock-ui').classList.add('hidden');
             document.getElementById('admin-ui').classList.remove('hidden');
             render();
-        } else { alert('خطأ!'); }
+        } else { alert('كلمة السر غير صحيحة'); }
     }
 
     function addNewMonth() {
-        let name = document.getElementById('month-name').value;
-        if(name) {
-            appData.unshift({ id: Date.now(), name: name, members: [], expenses: [] });
-            save();
+        let n = document.getElementById('month-name').value;
+        if(n) {
+            db.unshift({ id: Date.now(), name: n, members: [], expenses: [] });
+            sync();
+            document.getElementById('month-name').value = '';
         }
     }
 
-    function addItem(type) {
-        let monthId = document.getElementById('target-month-select').value;
-        let month = appData.find(m => m.id == monthId);
-        if(!month) return;
+    function saveToDB(type) {
+        let mId = document.getElementById('target-month-select').value;
+        let month = db.find(x => x.id == mId);
+        let name = document.getElementById('item-name').value;
+        let amt = parseFloat(document.getElementById('item-amount').value);
+        let cur = document.getElementById('item-cur').value;
+
+        if(!month || !name || !amt) return alert('أكمل البيانات');
 
         if(type === 'member') {
-            let name = document.getElementById('person-name').value;
-            let amt = parseFloat(document.getElementById('person-amount').value);
-            let cur = document.getElementById('person-cur').value;
-            if(name && amt) month.members.push({id: Date.now(), name, amt, cur});
+            month.members.push({ id: Date.now(), name, amt, cur });
         } else {
-            let desc = document.getElementById('person-name').value;
-            let val = parseFloat(document.getElementById('person-amount').value);
-            if(desc && val) month.expenses.push({id: Date.now(), desc, val});
+            month.expenses.push({ id: Date.now(), desc: name, amt, cur });
         }
-        save();
+        sync();
+        document.getElementById('item-name').value = '';
+        document.getElementById('item-amount').value = '';
     }
 
-    function deleteObj(mId, objId, type) {
-        let month = appData.find(m => m.id == mId);
-        if(type === 'member') month.members = month.members.filter(x => x.id !== objId);
-        else month.expenses = month.expenses.filter(x => x.id !== objId);
-        save();
+    function remove(mId, objId, type) {
+        let m = db.find(x => x.id == mId);
+        if(type === 'm') m.members = m.members.filter(x => x.id !== objId);
+        else m.expenses = m.expenses.filter(x => x.id !== objId);
+        sync();
     }
 
-    function deleteMonth(mId) {
-        if(confirm('حذف الشهر بالكامل؟')) {
-            appData = appData.filter(m => m.id !== mId);
-            save();
+    function deleteFullMonth(id) {
+        if(confirm('سيتم حذف الشهر بكافة بياناته، هل أنت متأكد؟')) {
+            db = db.filter(x => x.id !== id);
+            sync();
         }
     }
 
-    function save() {
-        localStorage.setItem('bilalia_pro_db', JSON.stringify(appData));
+    function sync() {
+        localStorage.setItem('bilalia_final_v1', JSON.stringify(db));
         render();
     }
 
     function render() {
-        let container = document.getElementById('all-months-container');
+        let area = document.getElementById('main-content-area');
         let select = document.getElementById('target-month-select');
-        container.innerHTML = '';
-        select.innerHTML = '';
+        area.innerHTML = ''; select.innerHTML = '';
 
-        let gSYP = 0, gUSD = 0, gEXP = 0, gMEM = 0;
+        let gSypIn = 0, gUsdIn = 0, gSypOut = 0, gUsdOut = 0;
 
-        appData.forEach(month => {
-            select.innerHTML += `<option value="${month.id}">${month.name}</option>`;
+        db.forEach(m => {
+            select.innerHTML += `<option value="${m.id}">${m.name}</option>`;
             
-            let mSYP = 0, mUSD = 0, mEXP = 0;
+            let mSypIn = 0, mUsdIn = 0, mSypOut = 0, mUsdOut = 0;
             let mRows = '', eRows = '';
 
-            month.members.forEach((m, i) => {
-                mRows += `<tr><td>${i+1}</td><td>${m.name}</td><td>${m.amt.toLocaleString()}</td><td style="color:${m.cur=='USD'?'var(--gold)':'var(--accent-green)'}">${m.cur}</td>
-                <td class="${isEditMode?'':'hidden'}"><button class="btn-del" onclick="deleteObj(${month.id},${m.id},'member')">حذف</button></td></tr>`;
-                if(m.cur === 'USD') mUSD += m.amt; else mSYP += m.amt;
+            m.members.forEach((mem, i) => {
+                mRows += `<tr><td>${i+1}</td><td>${mem.name}</td><td>${mem.amt.toLocaleString()}</td><td style="color:${mem.cur=='USD'?'var(--gold)':'var(--accent-green)'}">${mem.cur}</td>
+                <td class="${isEdit?'':'hidden'}"><button class="btn-del" onclick="remove(${m.id},${mem.id},'m')">حذف</button></td></tr>`;
+                if(mem.cur === 'USD') mUsdIn += mem.amt; else mSypIn += mem.amt;
             });
 
-            month.expenses.forEach(e => {
-                eRows += `<tr><td>${e.desc}</td><td>${e.val.toLocaleString()}</td>
-                <td class="${isEditMode?'':'hidden'}"><button class="btn-del" onclick="deleteObj(${month.id},${e.id},'expense')">حذف</button></td></tr>`;
-                mEXP += e.val;
+            m.expenses.forEach(exp => {
+                eRows += `<tr><td>${exp.desc}</td><td>${exp.amt.toLocaleString()}</td><td style="color:${exp.cur=='USD'?'var(--gold)':'var(--accent-green)'}">${exp.cur}</td>
+                <td class="${isEdit?'':'hidden'}"><button class="btn-del" onclick="remove(${m.id},${exp.id},'e')">حذف</button></td></tr>`;
+                if(exp.cur === 'USD') mUsdOut += exp.amt; else mSypOut += exp.amt;
             });
 
-            gSYP += mSYP; gUSD += mUSD; gEXP += mEXP; gMEM += month.members.length;
+            gSypIn += mSypIn; gUsdIn += mUsdIn; gSypOut += mSypOut; gUsdOut += mUsdOut;
 
-            container.innerHTML += `
+            area.innerHTML += `
                 <div class="month-block">
                     <div class="month-header">
-                        <span style="font-weight:bold; color:var(--gold)">${month.name}</span>
-                        <div style="font-size:12px">ليرة: ${mSYP.toLocaleString()} | دولار: ${mUSD} | مصروف: ${mEXP.toLocaleString()}</div>
-                        <button class="btn-del ${isEditMode?'':'hidden'}" onclick="deleteMonth(${month.id})">حذف الشهر</button>
+                        <span style="color:var(--accent-blue); font-weight:bold;">📅 ${m.name}</span>
+                        <button class="btn-del ${isEdit?'':'hidden'}" onclick="deleteFullMonth(${m.id})">حذف الشهر</button>
                     </div>
                     <table>
-                        <thead><tr><th>#</th><th>المشترك</th><th>المبلغ</th><th>العملة</th><th class="${isEditMode?'':'hidden'}">تحكم</th></tr></thead>
-                        <tbody>${mRows}</tbody>
+                        <thead><tr><th>#</th><th>المشترك</th><th>المبلغ</th><th>العملة</th><th class="${isEdit?'':'hidden'}">تحكم</th></tr></thead>
+                        <tbody>${mRows || '<tr><td colspan="5" style="text-align:center">لا يوجد بيانات</td></tr>'}</tbody>
                     </table>
-                    <div class="exp-table-section ${container.classList.contains('show-exp')?'':'hidden'}" style="background:#1c1010; padding:10px;">
-                        <h4 style="color:var(--danger); margin:5px;">المصروفات لهذا الشهر:</h4>
-                        <table style="background:transparent"><tbody>${eRows}</tbody></table>
+                    <div class="expense-log ${document.body.classList.contains('hide-expenses')?'hidden':''}" style="background:rgba(255,82,82,0.03); border-top:1px solid rgba(255,255,255,0.05); padding:10px;">
+                        <h4 style="color:var(--danger); margin:10px 0;"><i class="fas fa-exclamation-circle"></i> سجل مصروفات الشهر:</h4>
+                        <table>
+                            <thead><tr><th>البيان</th><th>القيمة</th><th>العملة</th><th class="${isEdit?'':'hidden'}">تحكم</th></tr></thead>
+                            <tbody>${eRows || '<tr><td colspan="4">لا يوجد مصروفات</td></tr>'}</tbody>
+                        </table>
                     </div>
                 </div>
             `;
         });
 
-        document.getElementById('total-m-count').innerText = gMEM;
-        document.getElementById('total-syp-val').innerText = gSYP.toLocaleString() + ' ل.س';
-        document.getElementById('total-usd-val').innerText = gUSD.toLocaleString() + ' $';
-        document.getElementById('total-exp-val').innerText = gEXP.toLocaleString() + ' ل.س';
+        document.getElementById('total-syp-val').innerText = (gSypIn - gSypOut).toLocaleString() + ' ل.س';
+        document.getElementById('total-usd-val').innerText = (gUsdIn - gUsdOut).toLocaleString() + ' $';
+        document.getElementById('total-exp-syp').innerText = gSypOut.toLocaleString() + ' ل.س';
+        document.getElementById('total-exp-usd').innerText = gUsdOut.toLocaleString() + ' $';
     }
     render();
 </script>
