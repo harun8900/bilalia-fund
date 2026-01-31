@@ -8,24 +8,24 @@
     <style>
         body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
         .card { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 15px; }
-        input, button { padding: 12px; width: 90%; border-radius: 8px; font-size: 16px; margin: 5px; border: none; }
+        input, button { padding: 12px; width: 90%; border-radius: 8px; font-size: 16px; margin: 5px; border: none; outline: none; }
         button { background: #00d2ff; color: black; font-weight: bold; cursor: pointer; }
         #status { color: #ffd700; margin: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
     <h3>صندوق البلالية الطبي</h3>
-    <div id="status">جاري فحص الاتصال النهائي...</div>
+    <div id="status">جاري الاتصال بقاعدة البيانات...</div>
     
     <div class="card">
-        <input type="text" id="m_input" placeholder="اسم الشهر (مثلاً: شباط)">
-        <button onclick="addM()">إضافة الآن</button>
+        <input type="text" id="m_input" placeholder="اكتب اسم الشهر هنا">
+        <button onclick="addM()">إضافة الشهر الآن</button>
     </div>
     
     <div id="list"></div>
 
     <script>
-        // البيانات المنسوخة من رسائلك وصورك بدقة
+        // البيانات التي أرسلتها أنت (مطابقة 100%)
         const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
         const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
         
@@ -34,9 +34,9 @@
         async function load() {
             const { data, error } = await _db.from('months').select('*');
             if (error) {
-                document.getElementById('status').innerText = "❌ تعذر الربط: " + error.message;
+                document.getElementById('status').innerText = "❌ خطأ في الربط: " + error.message;
             } else {
-                document.getElementById('status').innerText = "✅ متصل بالسيرفر بنجاح!";
+                document.getElementById('status').innerText = "✅ تم الربط بنجاح (السيرفر متصل)";
                 let h = "";
                 data?.forEach(m => h += `<div class='card'>${m.name}</div>`);
                 document.getElementById('list').innerHTML = h;
@@ -49,7 +49,7 @@
             document.getElementById('status').innerText = "⏳ جاري الإرسال...";
             const { error } = await _db.from('months').insert([{ name: val }]);
             if(error) {
-                alert("خطأ في الربط: " + error.message);
+                alert("تعذر الإرسال: " + error.message);
             } else {
                 document.getElementById('m_input').value = '';
                 load();
