@@ -2,96 +2,45 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي</title>
+    <title>فحص الاتصال</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
-        .card { background: #0f172a; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #1e293b; }
-        input, select, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #334155; }
-        button { cursor: pointer; background: #00d2ff; color: black; font-weight: bold; }
-        .hidden { display: none; }
-        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
-        th, td { border: 1px solid #1e293b; padding: 8px; }
-    </style>
 </head>
-<body>
-    <h2>صندوق البلالية الطبي</h2>
-    <div class="card">
-        الرصيد: <span id="syp">0</span> ليرة | <span id="usd">0</span> دولار
-    </div>
-
-    <div id="auth">
-        <input type="password" id="pw" placeholder="كلمة السر">
-        <button onclick="login()">دخول الإدارة</button>
-    </div>
-
-    <div id="admin" class="hidden">
-        <div class="card">
-            <input type="text" id="mName" placeholder="اسم الشهر الجديد">
-            <button onclick="addM()">إضافة شهر</button>
-        </div>
-        <div class="card">
-            <select id="mList"></select>
-            <input type="text" id="iName" placeholder="الاسم">
-            <input type="number" id="iAmt" placeholder="المبلغ">
-            <select id="iCur"><option value="SYP">ليرة</option><option value="USD">دولار</option></select>
-            <button onclick="addItem('member')">إضافة مشترك</button>
-            <button onclick="addItem('expense')" style="background:red; color:white">إضافة مصروف</button>
-        </div>
-    </div>
-
-    <div id="content">جارٍ التحميل...</div>
+<body style="background:#000; color:#fff; text-align:center; padding:50px;">
+    <h2>فحص إضافة الشهر</h2>
+    <input type="text" id="mName" placeholder="اكتب اسم الشهر هنا">
+    <button onclick="addM()">إضافة شهر الآن</button>
+    <div id="status" style="margin-top:20px; color:yellow;">حالة الاتصال: بانتظار الإضافة...</div>
+    <ul id="list"></ul>
 
     <script>
         const S_URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
         const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
         const _db = supabase.createClient(S_URL, S_KEY);
 
-        let isAdm = false;
-
-        async function login() {
-            if(document.getElementById('pw').value === 'هارون456') {
-                isAdm = true;
-                document.getElementById('auth').classList.add('hidden');
-                document.getElementById('admin').classList.remove('hidden');
+        async function addM() {
+            const n = document.getElementById('mName').value;
+            const status = document.getElementById('status');
+            status.innerText = "جارٍ الإرسال...";
+            
+            const { error } = await _db.from('months').insert([{name: n}]);
+            
+            if(error) {
+                status.style.color = "red";
+                status.innerText = "فشل: " + error.message;
+            } else {
+                status.style.color = "green";
+                status.innerText = "نجح! تم إضافة الشهر للسحابة";
                 load();
             }
         }
 
-        async function addM() {
-            const n = document.getElementById('mName').value;
-            if(n) { await _db.from('months').insert([{name: n}]); load(); }
-        }
-
-        async function addItem(t) {
-            const mid = document.getElementById('mList').value;
-            const n = document.getElementById('iName').value;
-            const a = document.getElementById('iAmt').value;
-            const c = document.getElementById('iCur').value;
-            if(mid && n && a) { await _db.from('data').insert([{month_id: mid, name: n, amt: a, cur: c, type: t}]); load(); }
-        }
-
         async function load() {
-            const { data: months } = await _db.from('months').select('*');
-            const { data: info } = await _db.from('data').select('*');
-            const area = document.getElementById('content');
-            const list = document.getElementById('mList');
-            area.innerHTML = ''; list.innerHTML = '';
-            let s = 0, u = 0;
-
-            months?.forEach(m => {
-                list.innerHTML += `<option value="${m.id}">${m.name}</option>`;
-                let rows = '';
-                info?.filter(d => d.month_id === m.id).forEach(i => {
-                    rows += `<tr><td>${i.name}</td><td>${i.amt}</td><td>${i.cur}</td><td>${i.type}</td></tr>`;
-                    let val = i.type === 'expense' ? -i.amt : i.amt;
-                    if(i.cur === 'SYP') s += val; else u += val;
-                });
-                area.innerHTML += `<h3>${m.name}</h3><table>${rows}</table>`;
+            const { data } = await _db.from('months').select('*');
+            const list = document.getElementById('list');
+            list.innerHTML = "";
+            data?.forEach(m => {
+                list.innerHTML += `<li>${m.name}</li>`;
             });
-            document.getElementById('syp').innerText = s;
-            document.getElementById('usd').innerText = u;
         }
         load();
     </script>
