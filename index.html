@@ -3,65 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي</title>
+    <title>صندوق البلالية</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; margin: 0; }
-        .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        input { padding: 15px; border-radius: 10px; width: 85%; margin-bottom: 15px; border: 1px solid #334155; font-size: 16px; background: #1e293b; color: white; outline: none; }
-        button { padding: 15px; width: 90%; background: #00d2ff; color: black; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:active { transform: scale(0.95); opacity: 0.8; }
-        #status { color: #ffd700; margin-top: 20px; font-weight: bold; font-size: 14px; }
+        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
+        .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
+        input, button { padding: 12px; width: 90%; border-radius: 8px; font-size: 16px; margin: 5px; }
+        button { background: #00d2ff; color: black; font-weight: bold; border: none; cursor: pointer; }
+        #status { color: #ffd700; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <h2 style="color: #00d2ff;">صندوق البلالية الطبي</h2>
-    <div id="status">جاري فحص الاتصال بالسيرفر...</div>
-
+    <h3>صندوق البلالية الطبي</h3>
+    <div id="status">فحص الاتصال...</div>
     <div class="card">
-        <input type="text" id="mName" placeholder="اكتب اسم الشهر هنا (مثال: شباط)">
-        <button onclick="addM()">إضافة الشهر الآن</button>
+        <input type="text" id="m" placeholder="اسم الشهر">
+        <button onclick="save()">إضافة الآن</button>
     </div>
-
     <div id="list"></div>
 
     <script>
-        // الرابط المصحح تماماً بناءً على إعداداتك
-        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
-        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
-        
-        const _db = supabase.createClient(URL, KEY);
+        // الرابط مأخوذ حرفياً من صورتك رقم 1001563646
+        const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
+        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        const sb = supabase.createClient(S_URL, S_KEY);
 
-        async function addM() {
-            const val = document.getElementById('mName').value;
-            if(!val) return alert("يرجى كتابة اسم الشهر");
-            
-            document.getElementById('status').innerText = "⏳ جاري الإرسال للسيرفر...";
-
-            const { error } = await _db.from('months').insert([{ name: val }]);
-
-            if(error) {
-                document.getElementById('status').innerText = "❌ فشل: " + error.message;
-                console.error(error);
-            } else {
-                document.getElementById('status').innerText = "✅ تم حفظ الشهر بنجاح!";
-                document.getElementById('mName').value = '';
-                load();
-            }
+        async function save() {
+            const val = document.getElementById('m').value;
+            if(!val) return;
+            document.getElementById('status').innerText = "⏳ جاري الحفظ...";
+            const { error } = await sb.from('months').insert([{ name: val }]);
+            if(error) alert("خطأ: " + error.message);
+            else { document.getElementById('m').value = ''; fetch(); }
         }
 
-        async function load() {
-            const { data, error } = await _db.from('months').select('*').order('id', { ascending: false });
+        async function fetch() {
+            const { data, error } = await sb.from('months').select('*');
             if(error) {
-                document.getElementById('status').innerText = "⚠️ بانتظار استجابة السيرفر...";
+                document.getElementById('status').innerText = "❌ فشل الاتصال بالسيرفر";
             } else {
-                document.getElementById('status').innerText = "✅ متصل وجاهز للعمل";
-                let h = "<h3 style='margin-top:30px;'>الأشهر المسجلة:</h3>";
-                data.forEach(m => h += `<div class='card' style='padding:10px; margin-top:10px;'>${m.name}</div>`);
+                document.getElementById('status').innerText = "✅ السيرفر متصل ومفتوح";
+                let h = "";
+                data?.forEach(i => h += `<div class='card'>${i.name}</div>`);
                 document.getElementById('list').innerHTML = h;
             }
         }
-        load();
+        fetch();
     </script>
 </body>
 </html>
