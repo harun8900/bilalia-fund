@@ -2,43 +2,63 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>صندوق البلالية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
+        .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 15px; }
+        input, button { padding: 12px; margin: 5px; border-radius: 8px; width: 80%; }
+        button { background: #00d2ff; color: black; font-weight: bold; border: none; }
+        #status { color: yellow; margin-bottom: 10px; font-size: 14px; }
+    </style>
 </head>
-<body style="background:#050a18; color:white; text-align:center; padding:20px;">
-    <h2>إضافة شهر جديد</h2>
-    <input type="text" id="mName" placeholder="مثلاً: فبراير 2026" style="padding:10px;">
-    <button onclick="addM()" style="padding:10px; background:cyan;">إضافة الآن</button>
-    
-    <div id="msg" style="margin-top:20px;">جاري فحص السحابة...</div>
-    <ul id="list" style="list-style:none; padding:0;"></ul>
+<body>
+    <h3>صندوق البلالية الطبي</h3>
+    <div id="status">جاري فحص الاتصال بالسحابة...</div>
+
+    <div class="card">
+        <input type="text" id="mName" placeholder="اكتب اسم الشهر هنا">
+        <button onclick="addMonth()">إضافة الشهر الآن</button>
+    </div>
+
+    <div id="result"></div>
 
     <script>
-        const URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
-        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
-        const _db = supabase.createClient(URL, KEY);
+        const S_URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
+        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        
+        // استخدام إعدادات إضافية لتجاوز مشاكل الشبكة
+        const _db = supabase.createClient(S_URL, S_KEY, {
+            auth: { persistSession: false }
+        });
 
-        async function addM() {
+        async function addMonth() {
             const n = document.getElementById('mName').value;
-            const res = await _db.from('months').insert([{name: n}]);
-            if(res.error) {
-                document.getElementById('msg').innerText = "خطأ: " + res.error.message;
+            if(!n) return;
+            document.getElementById('status').innerText = "جاري الإرسال...";
+
+            const { data, error } = await _db.from('months').insert([{ name: n }]);
+
+            if (error) {
+                document.getElementById('status').innerText = "فشل: " + error.message;
+                console.log(error);
             } else {
-                document.getElementById('msg').innerText = "تمت الإضافة بنجاح! ✅";
-                load();
+                document.getElementById('status').innerText = "نجح! تم إضافة الشهر ✅";
+                loadMonths();
             }
         }
 
-        async function load() {
-            const { data } = await _db.from('months').select('*');
-            const list = document.getElementById('list');
-            list.innerHTML = "";
+        async function loadMonths() {
+            const { data, error } = await _db.from('months').select('*');
             if(data) {
-                document.getElementById('msg').innerText = "متصل بالسحابة ✅";
-                data.forEach(m => { list.innerHTML += `<li>- ${m.name}</li>`; });
+                document.getElementById('status').innerText = "متصل بالسحابة ✅";
+                let html = '<ul>';
+                data.forEach(m => html += `<li>${m.name}</li>`);
+                document.getElementById('result').innerHTML = html + '</ul>';
             }
         }
-        load();
+        loadMonths();
     </script>
 </body>
 </html>
