@@ -3,209 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي | بإشراف محمد هارون</title>
+    <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #00d2ff; --secondary: #0081a7; --bg: #050a18; --card-bg: #0f172a; --accent: #4ade80; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 10px; }
-        .container { max-width: 800px; margin: auto; }
-        
-        /* الإحصائيات العلوية */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: linear-gradient(135deg, #0f172a, #1e293b); padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); text-align: center; }
-        .stat-card h5 { margin: 0; font-size: 12px; opacity: 0.8; }
-        .stat-card p { margin: 5px 0 0; font-size: 18px; font-weight: bold; color: var(--primary); }
-
-        /* الأقسام */
-        .section { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #1e293b; }
-        .section-title { color: var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        
-        .info-list { font-size: 13px; line-height: 1.6; text-align: right; padding-right: 20px; }
-        .admin-list { list-style: none; padding: 0; font-size: 14px; }
-        .admin-list li { padding: 8px; border-bottom: 1px solid #1e293b; }
-
-        input, select { padding: 12px; width: 100%; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; margin-bottom: 10px; box-sizing: border-box; }
-        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: #000; }
-        .btn-lock { background: #334155; color: white; margin-top: 10px; }
-        .admin-content { display: none; margin-top: 15px; border-top: 2px dashed var(--primary); padding-top: 15px; }
-
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
-        th { background: #1e293b; color: var(--primary); padding: 10px; text-align: right; }
-        td { padding: 10px; border-bottom: 1px solid #1e293b; }
-        .type-in { color: var(--accent); }
-        .type-out { color: #fb7185; }
+        :root { --primary: #00d2ff; --bg: #050a18; --card: #0f172a; --text: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 15px; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
+        .section { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 20px; }
+        input, select { padding: 12px; width: 90%; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
+        .btn { padding: 12px; width: 95%; background: var(--primary); color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        .admin-panel { display: none; margin-top: 20px; border-top: 1px solid var(--primary); padding-top: 20px; }
+        .stat-card { background: #1e293b; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header style="text-align: center; padding: 20px 0;">
-        <h2 style="margin: 0;">صندوق البلالية الطبي</h2>
-        <p style="font-size: 14px; color: var(--primary); font-weight: bold; margin-top: 5px;">برمجة وتنفيذ محمد هارون</p>
+    <header>
+        <h2>صندوق البلالية الطبي</h2>
+        <p style="color: var(--primary); font-weight: bold;">برمجة وتنفيذ محمد هارون</p>
     </header>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h5>إجمالي المشتركين</h5>
-            <p id="totalUsers">0</p>
-        </div>
-        <div class="stat-card">
-            <h5>الرصيد الكلي</h5>
-            <p id="totalBalance">0 $</p>
-        </div>
+    <div class="stat-card">
+        <small>الرصيد الكلي</small>
+        <div id="totalBalance" style="font-size: 20px; font-weight: bold;">0 $</div>
     </div>
 
-    <div class="section">
-        <div class="section-title">🛡️ نبذة عن المشروع وأهدافه</div>
-        <div class="info-list">
-            <p>قال تعالى: (وتعاونوا على البر والتقوى). هذا الصندوق لمساعدة أهلنا في الحالات الطارئة.</p>
-            <b>قوانين الصندوق:</b>
-            <ul>
-                <li>تغطية حالات: وفاة - عمليات - حوادث طارئة.</li>
-                <li>الدفع شهري، بحد أدنى 25 ألف ل.س.</li>
-            </ul>
-        </div>
+    <div class="section" id="lockArea">
+        <input type="password" id="passInput" placeholder="أدخل: هارون567">
+        <button class="btn" onclick="checkAccess()">تفعيل الصلاحيات</button>
     </div>
 
-    <div class="section">
-        <div class="section-title">👥 القائمون على الإدارة</div>
-        <ul class="admin-list">
-            <li>قاسم طالب | رامي باكير | حسن الخطيب</li>
-            <li>ضياء شحادة | نورس عبد السلام | محمد قويدر</li>
-            <li>هشام الخطيب</li>
-        </ul>
-    </div>
-
-    <div class="section" id="adminSection">
-        <div class="section-title">🔐 لوحة الإدارة الآمنة</div>
-        <input type="password" id="adminPass" placeholder="أدخل كلمة المرور لتفعيل الصلاحيات">
-        <button class="btn btn-primary" onclick="unlockAdmin()">تفعيل الصلاحيات</button>
-        
-        <div id="adminControls" class="admin-content">
-            <h5 style="color: var(--accent);">تم تفعيل صلاحيات محمد هارون ✅</h5>
-            <input type="text" id="newMonth" placeholder="اسم الشهر الجديد">
-            <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="addMonth()">إضافة شهر</button>
-            <hr>
+    <div id="controlPanel" class="admin-panel">
+        <div class="section">
+            <h4 style="color: #4ade80;">لوحة إدارة محمد هارون ✅</h4>
+            <input type="text" id="monthTitle" placeholder="اسم الشهر الجديد">
+            <button class="btn" onclick="addMonth()">إضافة شهر</button>
+            <hr style="margin: 20px 0; opacity: 0.2;">
             <select id="monthSelect"></select>
-            <input type="text" id="userName" placeholder="اسم المشترك أو البيان">
-            <input type="number" id="amount" placeholder="المبلغ">
-            <select id="type">
+            <input type="text" id="pName" placeholder="اسم المشترك">
+            <input type="number" id="pAmt" placeholder="المبلغ">
+            <select id="pType">
                 <option value="توفير">توفير (+)</option>
                 <option value="مصروف">مصروف (-)</option>
             </select>
-            <button class="btn btn-primary" onclick="addData()">إضافة البيانات</button>
-            <button class="btn btn-lock" onclick="location.reload()">قفل الصلاحيات</button>
+            <button class="btn" onclick="addEntry()">حفظ البيانات</button>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">📅 سجل المشتركين والعمليات</div>
-        <select id="viewFilter" onchange="loadTableData()"></select>
-        <table>
-            <thead>
-                <tr>
-                    <th>المشترك/البيان</th>
-                    <th>المبلغ</th>
-                    <th>النوع</th>
-                </tr>
-            </thead>
-            <tbody id="dataTableBody"></tbody>
-        </table>
-    </div>
-
-    <div style="text-align: center; font-size: 11px; opacity: 0.5; margin-bottom: 20px;">
-        جميع الحقوق محفوظة لصندوق البلالية الطبي - تنفيذ محمد هارون
+        <h4>سجل البيانات</h4>
+        <select id="filterMonth" onchange="loadTable()"></select>
+        <div id="tableOutput"></div>
     </div>
 </div>
 
 <script>
-    // بيانات الربط الناجحة
+    // البيانات الناجحة سابقاً
     const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
     const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(URL, KEY);
 
-    // كلمة المرور الجديدة التي طلبتها
-    const ADMIN_KEY = "هارون567";
-
-    function unlockAdmin() {
-        if(document.getElementById('adminPass').value === ADMIN_KEY) {
-            document.getElementById('adminControls').style.display = 'block';
-            document.getElementById('adminPass').style.display = 'none';
-            alert("مرحباً محمد هارون، تم فتح الصلاحيات بنجاح.");
-        } else { alert("كلمة المرور خاطئة!"); }
+    // التحقق من كلمة السر
+    function checkAccess() {
+        const pass = document.getElementById('passInput').value.trim();
+        // تأكد من كتابة "هارون567" باللغة العربية والأرقام الانجليزية كما طلبت
+        if (pass === "هارون567") {
+            document.getElementById('controlPanel').style.display = 'block';
+            document.getElementById('lockArea').style.display = 'none';
+            alert("مرحباً بك يا محمد هارون. تم فتح الصلاحيات.");
+            loadSetup();
+        } else {
+            alert("كلمة المرور غير صحيحة! تأكد من كتابتها بدقة.");
+        }
     }
 
-    async function loadInitial() {
-        const { data: months } = await _db.from('months').select('*').order('id', {ascending: false});
-        if(months && months.length > 0) {
-            let options = "";
-            months.forEach(m => options += `<option value="${m.id}">${m.name}</option>`);
+    async function loadSetup() {
+        const { data } = await _db.from('months').select('*').order('id', {ascending: false});
+        if(data) {
+            let options = data.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
             document.getElementById('monthSelect').innerHTML = options;
-            document.getElementById('viewFilter').innerHTML = options;
-            loadTableData();
+            document.getElementById('filterMonth').innerHTML = options;
+            loadTable();
         }
         updateStats();
     }
 
     async function addMonth() {
-        const name = document.getElementById('newMonth').value;
+        const name = document.getElementById('monthTitle').value;
         if(!name) return;
         await _db.from('months').insert([{ name }]);
-        location.reload();
+        loadSetup();
     }
 
-    async function addData() {
+    async function addEntry() {
         const mid = document.getElementById('monthSelect').value;
-        const name = document.getElementById('userName').value;
-        const amt = document.getElementById('amount').value;
-        const type = document.getElementById('type').value;
-        
+        const name = document.getElementById('pName').value;
+        const amt = document.getElementById('pAmt').value;
+        const type = document.getElementById('pType').value;
         const { error } = await _db.from('data').insert([{ month_id: mid, name, amt, type }]);
-        if(!error) { 
-            alert("تمت إضافة البيانات بنجاح ✅"); 
-            loadTableData(); 
-            updateStats();
-            document.getElementById('userName').value = '';
-            document.getElementById('amount').value = '';
-        }
+        if(!error) { alert("تم الحفظ ✅"); loadTable(); updateStats(); }
     }
 
-    async function loadTableData() {
-        const mid = document.getElementById('viewFilter').value;
-        if(!mid) return;
+    async function loadTable() {
+        const mid = document.getElementById('filterMonth').value;
         const { data } = await _db.from('data').select('*').eq('month_id', mid);
-        let rows = "";
-        data.forEach(d => {
-            rows += `<tr>
-                <td>${d.name}</td>
-                <td>${d.amt}</td>
-                <td class="${d.type === 'توفير' ? 'type-in' : 'type-out'}">${d.type}</td>
+        let html = '<table style="width:100%; margin-top:10px;">';
+        data?.forEach(d => {
+            html += `<tr style="border-bottom: 1px solid #1e293b;">
+                <td style="padding:10px;">${d.name}</td>
+                <td style="color:${d.type==='توفير'?'#4ade80':'#fb7185'}">${d.amt}</td>
             </tr>`;
         });
-        document.getElementById('dataTableBody').innerHTML = rows;
+        document.getElementById('tableOutput').innerHTML = html + '</table>';
     }
 
     async function updateStats() {
-        const { data } = await _db.from('data').select('amt, type, name');
+        const { data } = await _db.from('data').select('amt, type');
         let total = 0;
-        let users = new Set();
-        if(data) {
-            data.forEach(d => {
-                const amount = parseFloat(d.amt);
-                if(d.type === 'توفير') {
-                    total += amount;
-                    users.add(d.name);
-                } else {
-                    total -= amount;
-                }
-            });
-        }
+        data?.forEach(d => { total += (d.type === 'توفير' ? parseFloat(d.amt) : -parseFloat(d.amt)); });
         document.getElementById('totalBalance').innerText = total + " $";
-        document.getElementById('totalUsers').innerText = users.size;
     }
 
-    loadInitial();
+    loadSetup();
 </script>
 </body>
 </html>
