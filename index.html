@@ -17,23 +17,7 @@
             --text-dim: #94a3b8;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); color: white; margin: 0; padding: 0; }
-        
-        /* تنسيق اللوغو المضاف */
-        .logo-box {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            z-index: 10;
-        }
-        .logo-box img {
-            height: 80px;
-            width: auto;
-            border-radius: 50%;
-            border: 2px solid #ffffff; /* الداير الأبيض */
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .header { position: relative; padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
+        .header { padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
         .dev-name { color: var(--accent-blue); font-size: 14px; font-weight: bold; margin-top: 5px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
@@ -64,20 +48,11 @@
         td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
 
         footer { text-align: center; padding: 50px; color: #475569; font-size: 12px; }
-
-        /* تعديل للهاتف الصغير لكي لا يغطي اللوغو العنوان */
-        @media (max-width: 600px) {
-            .logo-box { position: static; margin-bottom: 10px; }
-            .header { padding-top: 15px; }
-        }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-box">
-        <img src="Loogo.png" alt="Logo">
-    </div>
     <h1>صندوق البلالية الطبي</h1>
     <div class="dev-name">برمجة وتنفيذ: محمد هارون</div>
 </div>
@@ -264,5 +239,5 @@
     render();
 </script>
 </body>
-    </html>
+                </html>
     
