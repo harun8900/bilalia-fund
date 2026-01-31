@@ -2,34 +2,29 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>فحص الاتصال</title>
+    <title>صندوق البلالية</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body style="background:#000; color:#fff; text-align:center; padding:50px;">
-    <h2>فحص إضافة الشهر</h2>
-    <input type="text" id="mName" placeholder="اكتب اسم الشهر هنا">
-    <button onclick="addM()">إضافة شهر الآن</button>
-    <div id="status" style="margin-top:20px; color:yellow;">حالة الاتصال: بانتظار الإضافة...</div>
-    <ul id="list"></ul>
+<body style="background:#050a18; color:white; text-align:center; padding:20px;">
+    <h2>إضافة شهر جديد</h2>
+    <input type="text" id="mName" placeholder="مثلاً: فبراير 2026" style="padding:10px;">
+    <button onclick="addM()" style="padding:10px; background:cyan;">إضافة الآن</button>
+    
+    <div id="msg" style="margin-top:20px;">جاري فحص السحابة...</div>
+    <ul id="list" style="list-style:none; padding:0;"></ul>
 
     <script>
-        const S_URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
-        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
-        const _db = supabase.createClient(S_URL, S_KEY);
+        const URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
+        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        const _db = supabase.createClient(URL, KEY);
 
         async function addM() {
             const n = document.getElementById('mName').value;
-            const status = document.getElementById('status');
-            status.innerText = "جارٍ الإرسال...";
-            
-            const { error } = await _db.from('months').insert([{name: n}]);
-            
-            if(error) {
-                status.style.color = "red";
-                status.innerText = "فشل: " + error.message;
+            const res = await _db.from('months').insert([{name: n}]);
+            if(res.error) {
+                document.getElementById('msg').innerText = "خطأ: " + res.error.message;
             } else {
-                status.style.color = "green";
-                status.innerText = "نجح! تم إضافة الشهر للسحابة";
+                document.getElementById('msg').innerText = "تمت الإضافة بنجاح! ✅";
                 load();
             }
         }
@@ -38,9 +33,10 @@
             const { data } = await _db.from('months').select('*');
             const list = document.getElementById('list');
             list.innerHTML = "";
-            data?.forEach(m => {
-                list.innerHTML += `<li>${m.name}</li>`;
-            });
+            if(data) {
+                document.getElementById('msg').innerText = "متصل بالسحابة ✅";
+                data.forEach(m => { list.innerHTML += `<li>- ${m.name}</li>`; });
+            }
         }
         load();
     </script>
