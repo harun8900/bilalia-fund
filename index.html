@@ -3,39 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق بلالية | Bilalia Fund</title>
+    <title>صندوق البلالية الطبي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #2c3e50; --accent: #27ae60; }
-        body { font-family: sans-serif; background: #f4f7f6; margin: 0; text-align: center; }
-        header { background: var(--primary); color: white; padding: 40px 20px; border-bottom: 5px solid var(--accent); }
-        .card { background: white; margin: 20px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn { background: var(--accent); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 15px; font-weight: bold; }
-        .stats { display: flex; justify-content: space-around; margin-top: 20px; flex-wrap: wrap; }
-        .stat-box { padding: 15px; min-width: 120px; }
+        :root {
+            --bg-dark: #0a1128;
+            --card-bg: #131b31;
+            --accent: #00d2ff;
+            --success: #00c851;
+            --text-gray: #b0b3b8;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #0a1128 0%, #1c2a48 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+        }
+        .header h1 { margin: 0; font-size: 24px; color: var(--accent); }
+        .header p { margin: 5px 0; font-size: 14px; color: var(--text-gray); }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .summary-card h3 { color: var(--text-gray); font-size: 14px; margin-bottom: 10px; }
+        .summary-card p { font-size: 22px; font-weight: bold; margin: 0; }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .section-title {
+            border-right: 4px solid var(--accent);
+            padding-right: 15px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--text-gray); font-weight: normal; font-size: 14px; }
+        .lira { color: var(--success); }
+        .dollar { color: #ffbb33; }
+
+        .rules-list { padding: 0; list-style: none; color: var(--text-gray); line-height: 1.8; }
+        .rules-list li::before { content: "•"; color: var(--accent); margin-left: 10px; }
+
+        .admin-panel {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px dashed var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin: 5px;
+        }
+        input { background: #1c2a48; color: white; width: calc(100% - 30px); }
+        .btn-action { background: var(--accent); color: var(--bg-dark); font-weight: bold; cursor: pointer; }
+        .btn-lock { background: #ff4444; color: white; }
+
+        .hidden-content { display: none; }
+        footer { text-align: center; padding: 40px; color: var(--text-gray); font-size: 12px; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>صندوق بلالية الخيري</h1>
-        <p>نعمل معاً لتأمين مستقبل أفضل للجميع</p>
-    </header>
-    <div class="card">
-        <h2>عن المبادرة</h2>
-        <p>صندوق بلالية هو مشروع تكافلي يهدف لدعم العائلات والطلاب وتوفير المساعدات الطبية الطارئة بأسلوب شفاف ومنظم.</p>
-    </div>
-    <div class="card">
-        <h2>مجالات الدعم</h2>
-        <div class="stats">
-            <div class="stat-box"><i class="fas fa-heartbeat fa-2x"></i><p>الصحة</p></div>
-            <div class="stat-box"><i class="fas fa-book-open fa-2x"></i><p>التعليم</p></div>
-            <div class="stat-box"><i class="fas fa-users fa-2x"></i><p>التنمية</p></div>
+
+<div class="header">
+    <h1>صندوق البلالية الطبي</h1>
+    <p>برمجة وتنفيذ تقني: محمد هارون</p>
+</div>
+
+<div class="container">
+    <div class="summary-grid">
+        <div class="summary-card">
+            <h3>إجمالي المشتركين</h3>
+            <p id="total-members">110</p>
+        </div>
+        <div class="summary-card">
+            <h3>إجمالي الليرة السورية</h3>
+            <p id="total-syp">8,428,000 ل.س</p>
+        </div>
+        <div class="summary-card">
+            <h3>إجمالي الدولار</h3>
+            <p id="total-usd">150 $</p>
         </div>
     </div>
-    <div class="card">
-        <h2>ساهم معنا</h2>
-        <p>تواصل معنا لتكون جزءاً من هذا العطاء.</p>
-        <a href="https://wa.me/YOURNUMBER" class="btn">تواصل عبر واتساب</a>
+
+    <div class="section">
+        <div class="section-title">نبذة عن المشروع وأهدافه</div>
+        <p style="font-size: 14px; color: var(--text-gray);">
+            قال تعالى: (وتعاونوا على البر والتقوى ولا تعاونوا على الإثم والعدوان). نظراً لضيق المعيشة ووضع الناس، تم تفعيل هذا الصندوق للمساعدة في الحالات الطارئة وتخفيف الأعباء الصحية.
+        </p>
+        <ul class="rules-list">
+            <li>إدارة الصندوق هي التي تحدد وتقيم نوع الحادث وقيمة المبلغ المدفوع.</li>
+            <li>يعد الصندوق تأمين صحي للمشتركين فقط (وفاة، عمليات، حوادث طارئة).</li>
+            <li>لا يمكن صرف الراشتات الدوائية.</li>
+            <li>الحد الأدنى للدفع شهرياً 25 ألف ليرة سورية.</li>
+        </ul>
     </div>
+
+    <div class="section">
+        <div class="section-title">القائمون على إدارة الصندوق</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <span class="summary-card" style="padding: 10px 20px; font-size: 14px;">قاسم طالب</span>
+            <span class="summary-card" style="padding: 10px 20px; font-size: 14px;">رامي باكير</span>
+            <span class="summary-card" style="padding: 10px 20px; font-size: 14px;">حسن الخطيب</span>
+            <span class="summary-card" style="padding: 10px 20px; font-size: 14px;">نورس عبد السلام</span>
+        </div>
+    </div>
+
+    <div class="section admin-panel">
+        <div class="section-title">لوحة الإدارة الآمنة</div>
+        <div id="lock-screen">
+            <input type="password" id="pass-input" placeholder="أدخل كلمة السر لتفعيل الصلاحيات">
+            <button class="btn-action" onclick="unlock()">تفعيل الصلاحيات</button>
+        </div>
+        
+        <div id="admin-controls" class="hidden-content">
+            <p class="lira">الصلاحيات مفعلة الآن ✅</p>
+            <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <h4>إضافة مشترك جديد</h4>
+                <input type="text" id="new-name" placeholder="اسم المشترك">
+                <input type="text" id="new-amount" placeholder="المبلغ (مثال: 50 ألف)">
+                <select id="currency-select" style="padding: 10px; background: #1c2a48; color: white; margin: 5px; border-radius: 5px;">
+                    <option value="ل.س">ليرة سورية</option>
+                    <option value="$">دولار</option>
+                </select>
+                <button class="btn-action" onclick="addMember()">إضافة وحفظ</button>
+                <button class="btn-lock" onclick="location.reload()">قفل اللوحة</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">جدول المشتركين الشهري - يناير 2026</div>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم المشترك</th>
+                        <th>المبلغ</th>
+                        <th>العملة</th>
+                    </tr>
+                </thead>
+                <tbody id="members-table">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="expenditure-section" class="section hidden-content">
+        <div class="section-title">سجل المصروفات</div>
+        <div class="summary-card" style="text-align: right; border-right: 4px solid #ff4444;">
+            <p style="font-size: 16px;">تم صرف مبلغ لـ رامي ابو شنب بقيمة 900,000 ل.س (معالجة فيزيائية 15 يوم).</p>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    Muhammed Harun 2026®<br>جميع الحقوق محفوظة لصندوق البلالية الطبي
+</footer>
+
+<script>
+    // البيانات الأولية
+    const initialData = [
+        {name: "عمر طالب", amount: "500 ألف", cur: "ل.س"},
+        {name: "فادي زوري", amount: "100 ألف", cur: "ل.س"},
+        {name: "أبو إياد سقرق", amount: "400 ألف", cur: "ل.س"},
+        {name: "موفق وردة", amount: "100", cur: "$"},
+        {name: "نورس عبد السلام", amount: "150 ألف", cur: "ل.س"},
+        {name: "حسن أحمد الخطيب", amount: "50", cur: "$"}
+        // سيتم تحميل باقي الأسماء برمجياً لسهولة التوسع
+    ];
+
+    // نظام الحماية
+    function unlock() {
+        const pass = document.getElementById('pass-input').value;
+        if(pass === "هارون456") {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('admin-controls').classList.remove('hidden-content');
+            document.getElementById('expenditure-section').classList.remove('hidden-content');
+        } else {
+            alert("كلمة السر خاطئة!");
+        }
+    }
+
+    // وظيفة إضافة مشترك (مع حفظ محلي)
+    function addMember() {
+        const name = document.getElementById('new-name').value;
+        const amount = document.getElementById('new-amount').value;
+        const cur = document.getElementById('currency-select').value;
+
+        if(name && amount) {
+            const table = document.getElementById('members-table');
+            const rowCount = table.rows.length + 1;
+            const row = `<tr><td>${rowCount}</td><td>${name}</td><td>${amount}</td><td class="${cur === '$' ? 'dollar' : 'lira'}">${cur}</td></tr>`;
+            table.innerHTML += row;
+            
+            // حفظ في LocalStorage
+            let stored = JSON.parse(localStorage.getItem('fund_data') || "[]");
+            stored.push({name, amount, cur});
+            localStorage.setItem('fund_data', JSON.stringify(stored));
+            
+            alert("تم الحفظ بنجاح داخل التطبيق");
+        }
+    }
+
+    // عرض البيانات عند التشغيل
+    window.onload = function() {
+        const table = document.getElementById('members-table');
+        let html = "";
+        
+        // دمج البيانات الأولية مع المحفوظة
+        let stored = JSON.parse(localStorage.getItem('fund_data') || "[]");
+        const allData = [...initialData, ...stored];
+
+        allData.forEach((item, index) => {
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td>${item.name}</td>
+                <td>${item.amount}</td>
+                <td class="${item.cur === '$' ? 'dollar' : 'lira'}">${item.cur}</td>
+            </tr>`;
+        });
+        table.innerHTML = html;
+        document.getElementById('total-members').innerText = allData.length;
+    }
+</script>
+
 </body>
-</html>
+                                                          </html>
+                                                          
