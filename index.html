@@ -17,7 +17,23 @@
             --text-dim: #94a3b8;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); color: white; margin: 0; padding: 0; }
-        .header { padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
+        
+        /* تنسيق اللوجو - تمت الإضافة هنا */
+        .logo-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        .logo-wrapper img {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            object-fit: cover;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .header { position: relative; padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
         .dev-name { color: var(--accent-blue); font-size: 14px; font-weight: bold; margin-top: 5px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
@@ -48,11 +64,20 @@
         td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
 
         footer { text-align: center; padding: 50px; color: #475569; font-size: 12px; }
+
+        /* استجابة الجوال للوجو */
+        @media (max-width: 600px) {
+            .logo-wrapper { position: static; margin-bottom: 10px; display: block; }
+            .header { padding-top: 20px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
+    <div class="logo-wrapper">
+        <img src="Loogo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75?text=Logo'">
+    </div>
     <h1>صندوق البلالية الطبي</h1>
     <div class="dev-name">برمجة وتنفيذ: محمد هارون</div>
 </div>
@@ -131,7 +156,7 @@
 <script>
     // تم تصحيح المفاتيح هنا لضمان الربط السليم
     const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmFvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(S_URL, S_KEY);
 
     let isEdit = false;
@@ -239,5 +264,4 @@
     render();
 </script>
 </body>
-                </html>
-    
+</html>
