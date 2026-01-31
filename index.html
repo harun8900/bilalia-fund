@@ -3,15 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilalia Fund | صندوق بلالية</title>
+    <title>صندوق بلالية | Bilalia Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        h1 { color: #2c3e50; }
-        p { color: #7f8c8d; }
+        :root { --primary: #2c3e50; --accent: #27ae60; }
+        body { font-family: sans-serif; background: #f4f7f6; margin: 0; text-align: center; }
+        header { background: var(--primary); color: white; padding: 40px 20px; border-bottom: 5px solid var(--accent); }
+        .card { background: white; margin: 20px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn { background: var(--accent); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 15px; font-weight: bold; }
+        .stats { display: flex; justify-content: space-around; margin-top: 20px; flex-wrap: wrap; }
+        .stat-box { padding: 15px; min-width: 120px; }
     </style>
 </head>
 <body>
-    <h1>مرحباً بكم في مشروع Bilalia Fund</h1>
-    <p>هذا الموقع قيد الإنشاء حالياً.</p>
+    <header>
+        <h1>صندوق بلالية الخيري</h1>
+        <p>نعمل معاً لتأمين مستقبل أفضل للجميع</p>
+    </header>
+    <div class="card">
+        <h2>عن المبادرة</h2>
+        <p>صندوق بلالية هو مشروع تكافلي يهدف لدعم العائلات والطلاب وتوفير المساعدات الطبية الطارئة بأسلوب شفاف ومنظم.</p>
+    </div>
+    <div class="card">
+        <h2>مجالات الدعم</h2>
+        <div class="stats">
+            <div class="stat-box"><i class="fas fa-heartbeat fa-2x"></i><p>الصحة</p></div>
+            <div class="stat-box"><i class="fas fa-book-open fa-2x"></i><p>التعليم</p></div>
+            <div class="stat-box"><i class="fas fa-users fa-2x"></i><p>التنمية</p></div>
+        </div>
+    </div>
+    <div class="card">
+        <h2>ساهم معنا</h2>
+        <p>تواصل معنا لتكون جزءاً من هذا العطاء.</p>
+        <a href="https://wa.me/YOURNUMBER" class="btn">تواصل عبر واتساب</a>
+    </div>
 </body>
 </html>
