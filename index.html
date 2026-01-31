@@ -20,19 +20,16 @@
         .section { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #1e293b; }
         .section-title { color: var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         
-        /* القوانين والقائمون */
         .info-list { font-size: 13px; line-height: 1.6; text-align: right; padding-right: 20px; }
         .admin-list { list-style: none; padding: 0; font-size: 14px; }
         .admin-list li { padding: 8px; border-bottom: 1px solid #1e293b; }
 
-        /* لوحة التحكم */
         input, select { padding: 12px; width: 100%; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; margin-bottom: 10px; box-sizing: border-box; }
         .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
         .btn-primary { background: var(--primary); color: #000; }
         .btn-lock { background: #334155; color: white; margin-top: 10px; }
         .admin-content { display: none; margin-top: 15px; border-top: 2px dashed var(--primary); padding-top: 15px; }
 
-        /* جدول المشتركين */
         table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
         th { background: #1e293b; color: var(--primary); padding: 10px; text-align: right; }
         td { padding: 10px; border-bottom: 1px solid #1e293b; }
@@ -45,7 +42,7 @@
 <div class="container">
     <header style="text-align: center; padding: 20px 0;">
         <h2 style="margin: 0;">صندوق البلالية الطبي</h2>
-        <p style="font-size: 12px; opacity: 0.7;">برمجة وتنفيذ: محمد هارون</p>
+        <p style="font-size: 14px; color: var(--primary); font-weight: bold; margin-top: 5px;">برمجة وتنفيذ محمد هارون</p>
     </header>
 
     <div class="stats-grid">
@@ -75,7 +72,8 @@
         <div class="section-title">👥 القائمون على الإدارة</div>
         <ul class="admin-list">
             <li>قاسم طالب | رامي باكير | حسن الخطيب</li>
-            <li>هيام شحادة | نورس عبد السلام | محمد قويدر</li>
+            <li>ضياء شحادة | نورس عبد السلام | محمد قويدر</li>
+            <li>هشام الخطيب</li>
         </ul>
     </div>
 
@@ -85,12 +83,10 @@
         <button class="btn btn-primary" onclick="unlockAdmin()">تفعيل الصلاحيات</button>
         
         <div id="adminControls" class="admin-content">
-            <h5>أهلاً محمد هارون - لوحة التحكم مفعلة</h5>
+            <h5 style="color: var(--accent);">تم تفعيل صلاحيات محمد هارون ✅</h5>
             <input type="text" id="newMonth" placeholder="اسم الشهر الجديد">
             <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="addMonth()">إضافة شهر</button>
-            
             <hr>
-            
             <select id="monthSelect"></select>
             <input type="text" id="userName" placeholder="اسم المشترك أو البيان">
             <input type="number" id="amount" placeholder="المبلغ">
@@ -117,37 +113,44 @@
             <tbody id="dataTableBody"></tbody>
         </table>
     </div>
+
+    <div style="text-align: center; font-size: 11px; opacity: 0.5; margin-bottom: 20px;">
+        جميع الحقوق محفوظة لصندوق البلالية الطبي - تنفيذ محمد هارون
+    </div>
 </div>
 
 <script>
-    // البيانات الناجحة
+    // بيانات الربط الناجحة
     const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
     const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(URL, KEY);
 
-    // كلمة المرور الافتراضية
-    const ADMIN_KEY = "123";
+    // كلمة المرور الجديدة التي طلبتها
+    const ADMIN_KEY = "هارون567";
 
     function unlockAdmin() {
         if(document.getElementById('adminPass').value === ADMIN_KEY) {
             document.getElementById('adminControls').style.display = 'block';
             document.getElementById('adminPass').style.display = 'none';
-            alert("مرحباً محمد هارون، تم فتح الصلاحيات");
-        } else { alert("كلمة المرور خاطئة"); }
+            alert("مرحباً محمد هارون، تم فتح الصلاحيات بنجاح.");
+        } else { alert("كلمة المرور خاطئة!"); }
     }
 
     async function loadInitial() {
         const { data: months } = await _db.from('months').select('*').order('id', {ascending: false});
-        let options = "";
-        months.forEach(m => options += `<option value="${m.id}">${m.name}</option>`);
-        document.getElementById('monthSelect').innerHTML = options;
-        document.getElementById('viewFilter').innerHTML = options;
-        loadTableData();
+        if(months && months.length > 0) {
+            let options = "";
+            months.forEach(m => options += `<option value="${m.id}">${m.name}</option>`);
+            document.getElementById('monthSelect').innerHTML = options;
+            document.getElementById('viewFilter').innerHTML = options;
+            loadTableData();
+        }
         updateStats();
     }
 
     async function addMonth() {
         const name = document.getElementById('newMonth').value;
+        if(!name) return;
         await _db.from('months').insert([{ name }]);
         location.reload();
     }
@@ -159,11 +162,18 @@
         const type = document.getElementById('type').value;
         
         const { error } = await _db.from('data').insert([{ month_id: mid, name, amt, type }]);
-        if(!error) { alert("تمت الإضافة بنجاح"); loadTableData(); updateStats(); }
+        if(!error) { 
+            alert("تمت إضافة البيانات بنجاح ✅"); 
+            loadTableData(); 
+            updateStats();
+            document.getElementById('userName').value = '';
+            document.getElementById('amount').value = '';
+        }
     }
 
     async function loadTableData() {
         const mid = document.getElementById('viewFilter').value;
+        if(!mid) return;
         const { data } = await _db.from('data').select('*').eq('month_id', mid);
         let rows = "";
         data.forEach(d => {
@@ -177,17 +187,20 @@
     }
 
     async function updateStats() {
-        const { data } = await _db.from('data').select('amt, type');
+        const { data } = await _db.from('data').select('amt, type, name');
         let total = 0;
         let users = new Set();
-        data.forEach(d => {
-            if(d.type === 'توفير') {
-                total += parseFloat(d.amt);
-                users.add(d.name);
-            } else {
-                total -= parseFloat(d.amt);
-            }
-        });
+        if(data) {
+            data.forEach(d => {
+                const amount = parseFloat(d.amt);
+                if(d.type === 'توفير') {
+                    total += amount;
+                    users.add(d.name);
+                } else {
+                    total -= amount;
+                }
+            });
+        }
         document.getElementById('totalBalance').innerText = total + " $";
         document.getElementById('totalUsers').innerText = users.size;
     }
@@ -195,5 +208,4 @@
     loadInitial();
 </script>
 </body>
-    </html>
-    
+</html>
