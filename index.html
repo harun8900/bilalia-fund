@@ -8,25 +8,25 @@
     <style>
         body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
         .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
-        input, button { padding: 12px; margin: 10px; border-radius: 8px; width: 85%; font-size: 16px; }
-        button { background: #00d2ff; color: black; font-weight: bold; border: none; cursor: pointer; }
+        input { padding: 12px; border-radius: 8px; width: 80%; margin-bottom: 10px; border: 1px solid #334155; }
+        button { padding: 12px; width: 80%; background: #00d2ff; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
         #status { color: #ffd700; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
     <h3>صندوق البلالية الطبي</h3>
-    <div id="status">جاري فحص العنوان الجديد...</div>
+    <div id="status">جاري فحص الاتصال...</div>
 
     <div class="card">
-        <input type="text" id="mName" placeholder="اكتب اسم الشهر (مثلاً: شباط 2026)">
+        <input type="text" id="mName" placeholder="اسم الشهر (مثال: شباط 2026)">
         <button onclick="addM()">إضافة الشهر الآن</button>
     </div>
 
     <div id="list" style="margin-top:20px;"></div>
 
     <script>
-        // العنوان المصحح بناءً على صورتك رقم 1001563646
-        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
+        // الرابط المنسوخ بدقة حرفية من صورتك رقم 1001563646
+        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
         const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
         
         const _db = supabase.createClient(URL, KEY);
@@ -40,6 +40,7 @@
 
             if(error) {
                 document.getElementById('status').innerText = "فشل: " + error.message;
+                console.log(error);
             } else {
                 document.getElementById('status').innerText = "تمت الإضافة بنجاح! ✅";
                 document.getElementById('mName').value = '';
@@ -50,11 +51,11 @@
         async function load() {
             const { data, error } = await _db.from('months').select('*');
             if(error) {
-                document.getElementById('status').innerText = "خطأ في الاتصال: تأكد من الرابط";
+                document.getElementById('status').innerText = "❌ خطأ في الاتصال";
             } else {
-                document.getElementById('status').innerText = "✅ متصل بالعنوان الصحيح";
-                let h = "<h4>الأشهر المضافة:</h4>";
-                data.forEach(m => h += `<div class="card">${m.name}</div>`);
+                document.getElementById('status').innerText = "✅ متصل بالسيرفر الصحيح";
+                let h = "<h4>الأشهر المسجلة:</h4>";
+                data.forEach(m => h += `<div class='card'>${m.name}</div>`);
                 document.getElementById('list').innerHTML = h;
             }
         }
