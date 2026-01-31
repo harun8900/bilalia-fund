@@ -6,55 +6,62 @@
     <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
-        .card { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
-        input, button { padding: 12px; width: 85%; border-radius: 8px; font-size: 16px; margin: 5px; }
-        button { background: #00d2ff; color: black; font-weight: bold; border: none; cursor: pointer; }
-        #status { color: #ffd700; margin-top: 15px; font-weight: bold; }
+        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; margin: 0; }
+        .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        input { padding: 15px; border-radius: 10px; width: 85%; margin-bottom: 15px; border: 1px solid #334155; font-size: 16px; background: #1e293b; color: white; outline: none; }
+        button { padding: 15px; width: 90%; background: #00d2ff; color: black; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:active { transform: scale(0.95); opacity: 0.8; }
+        #status { color: #ffd700; margin-top: 20px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
-    <h3>صندوق البلالية الطبي</h3>
-    <div id="status">جاري فحص حالة السيرفر...</div>
+    <h2 style="color: #00d2ff;">صندوق البلالية الطبي</h2>
+    <div id="status">جاري فحص الاتصال بالسيرفر...</div>
 
     <div class="card">
-        <input type="text" id="m_input" placeholder="اسم الشهر (مثال: شباط 2026)">
-        <button onclick="addM()">إضافة الشهر</button>
+        <input type="text" id="mName" placeholder="اكتب اسم الشهر هنا (مثال: شباط)">
+        <button onclick="addM()">إضافة الشهر الآن</button>
     </div>
+
     <div id="list"></div>
 
     <script>
-        // العنوان المصحح من صورتك 1001563646
-        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
+        // الرابط المصحح تماماً بناءً على إعداداتك
+        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
         const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        
         const _db = supabase.createClient(URL, KEY);
 
-        async function checkConnection() {
-            const { data, error } = await _db.from('months').select('count');
-            if (error) {
-                document.getElementById('status').innerText = "❌ السيرفر يرفض الاتصال (نفذ كود SQL)";
+        async function addM() {
+            const val = document.getElementById('mName').value;
+            if(!val) return alert("يرجى كتابة اسم الشهر");
+            
+            document.getElementById('status').innerText = "⏳ جاري الإرسال للسيرفر...";
+
+            const { error } = await _db.from('months').insert([{ name: val }]);
+
+            if(error) {
+                document.getElementById('status').innerText = "❌ فشل: " + error.message;
+                console.error(error);
             } else {
-                document.getElementById('status').innerText = "✅ السيرفر متصل ومفتوح للعمل";
+                document.getElementById('status').innerText = "✅ تم حفظ الشهر بنجاح!";
+                document.getElementById('mName').value = '';
                 load();
             }
         }
 
-        async function addM() {
-            const n = document.getElementById('m_input').value;
-            if(!n) return;
-            document.getElementById('status').innerText = "جاري الإرسال...";
-            const { error } = await _db.from('months').insert([{name: n}]);
-            if(error) alert("خطأ: " + error.message);
-            else { document.getElementById('m_input').value = ''; load(); }
-        }
-
         async function load() {
-            const { data } = await _db.from('months').select('*');
-            let h = "";
-            data?.forEach(m => h += `<div class='card'>${m.name}</div>`);
-            document.getElementById('list').innerHTML = h;
+            const { data, error } = await _db.from('months').select('*').order('id', { ascending: false });
+            if(error) {
+                document.getElementById('status').innerText = "⚠️ بانتظار استجابة السيرفر...";
+            } else {
+                document.getElementById('status').innerText = "✅ متصل وجاهز للعمل";
+                let h = "<h3 style='margin-top:30px;'>الأشهر المسجلة:</h3>";
+                data.forEach(m => h += `<div class='card' style='padding:10px; margin-top:10px;'>${m.name}</div>`);
+                document.getElementById('list').innerHTML = h;
+            }
         }
-        checkConnection();
+        load();
     </script>
 </body>
 </html>
