@@ -3,52 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية</title>
+    <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
         .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
-        input, button { padding: 12px; width: 90%; border-radius: 8px; font-size: 16px; margin: 5px; }
-        button { background: #00d2ff; color: black; font-weight: bold; border: none; cursor: pointer; }
-        #status { color: #ffd700; margin-top: 15px; }
+        input, button { padding: 12px; width: 85%; border-radius: 8px; font-size: 16px; margin: 10px; border: none; }
+        button { background: #00d2ff; color: black; font-weight: bold; cursor: pointer; }
+        #status { color: #ffd700; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
     <h3>صندوق البلالية الطبي</h3>
-    <div id="status">فحص الاتصال...</div>
+    <div id="status">جاري فحص الاتصال...</div>
+
     <div class="card">
-        <input type="text" id="m" placeholder="اسم الشهر">
-        <button onclick="save()">إضافة الآن</button>
+        <input type="text" id="m_input" placeholder="اكتب اسم الشهر هنا">
+        <button onclick="addM()">إضافة الشهر الآن</button>
     </div>
     <div id="list"></div>
 
     <script>
-        // الرابط مأخوذ حرفياً من صورتك رقم 1001563646
-        const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
-        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
-        const sb = supabase.createClient(S_URL, S_KEY);
+        // الرابط الذي أرسلته أنت وهو الصحيح تماماً
+        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
+        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        const _db = supabase.createClient(URL, KEY);
 
-        async function save() {
-            const val = document.getElementById('m').value;
-            if(!val) return;
-            document.getElementById('status').innerText = "⏳ جاري الحفظ...";
-            const { error } = await sb.from('months').insert([{ name: val }]);
-            if(error) alert("خطأ: " + error.message);
-            else { document.getElementById('m').value = ''; fetch(); }
-        }
-
-        async function fetch() {
-            const { data, error } = await sb.from('months').select('*');
-            if(error) {
-                document.getElementById('status').innerText = "❌ فشل الاتصال بالسيرفر";
+        async function load() {
+            const { data, error } = await _db.from('months').select('*');
+            if (error) {
+                document.getElementById('status').innerText = "❌ السيرفر لا يستجيب";
             } else {
-                document.getElementById('status').innerText = "✅ السيرفر متصل ومفتوح";
+                document.getElementById('status').innerText = "✅ متصل وجاهز تماماً";
                 let h = "";
-                data?.forEach(i => h += `<div class='card'>${i.name}</div>`);
+                data?.forEach(m => h += `<div class='card'>${m.name}</div>`);
                 document.getElementById('list').innerHTML = h;
             }
         }
-        fetch();
+
+        async function addM() {
+            const val = document.getElementById('m_input').value;
+            if(!val) return;
+            document.getElementById('status').innerText = "⏳ جاري الحفظ...";
+            const { error } = await _db.from('months').insert([{ name: val }]);
+            if(error) {
+                alert("خطأ: " + error.message);
+            } else {
+                document.getElementById('m_input').value = '';
+                load();
+            }
+        }
+        load();
     </script>
 </body>
 </html>
