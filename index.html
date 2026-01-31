@@ -1,23 +1,65 @@
-<script>
-    // الروابط الصحيحة طبقاً لصور الإعدادات الخاصة بك
-    const URL = "https://xuiwkvrhatcoovfozsq.supabase.co"; 
-    const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صندوق البلالية الطبي</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --main: #00d2ff; --bg: #050a18; --card: #0f172a; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 15px; }
+        input, button { padding: 12px; margin: 5px; border-radius: 8px; width: 90%; font-size: 16px; border: none; }
+        button { cursor: pointer; background: var(--main); color: black; font-weight: bold; }
+        #status { color: #ffd700; font-size: 14px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h3>صندوق البلالية الطبي</h3>
+    <div id="status">جاري الاتصال بالسيرفر الصحيح...</div>
 
-    const _db = supabase.createClient(URL, KEY);
+    <div class="card">
+        <input type="text" id="m_input" placeholder="اكتب اسم الشهر هنا">
+        <button onclick="addM()">إضافة الشهر الآن</button>
+    </div>
 
-    async function addM() {
-        const n = document.getElementById('m_input').value;
-        if(!n) return;
-        document.getElementById('status').innerText = "جاري الإرسال...";
-        
-        // محاولة الإرسال بالرابط الصحيح
-        const { error } = await _db.from('months').insert([{ name: n }]);
-        
-        if(error) {
-            alert("فشل: " + error.message);
-        } else {
-            alert("نجحت الإضافة! ✅");
-            location.reload(); // تحديث الصفحة لرؤية النتيجة
+    <div id="list"></div>
+
+    <script>
+        // الروابط المصححة طبقاً لصورتك رقم 1001563646
+        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
+        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+
+        const _db = supabase.createClient(URL, KEY);
+
+        async function addM() {
+            const val = document.getElementById('m_input').value;
+            if(!val) return;
+            document.getElementById('status').innerText = "جاري الإرسال...";
+            
+            const { error } = await _db.from('months').insert([{ name: val }]);
+            
+            if(error) {
+                alert("حدث خطأ: " + error.message);
+            } else {
+                alert("تمت الإضافة بنجاح! ✅");
+                document.getElementById('m_input').value = '';
+                load();
+            }
         }
-    }
-</script>
+
+        async function load() {
+            const { data, error } = await _db.from('months').select('*');
+            if(error) {
+                document.getElementById('status').innerText = "❌ تأكد من تنفيذ كود SQL بنجاح";
+            } else {
+                document.getElementById('status').innerText = "✅ متصل بالسيرفر الصحيح";
+                let h = "";
+                data.forEach(m => h += `<div class="card">${m.name}</div>`);
+                document.getElementById('list').innerHTML = h;
+            }
+        }
+        load();
+    </script>
+</body>
+</html>
