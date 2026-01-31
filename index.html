@@ -18,26 +18,26 @@
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); color: white; margin: 0; padding: 0; }
         
-        /* تنسيق اللوغو في الزاوية اليمنى العليا */
-        .header-logo {
+        /* تنسيق اللوغو المضاف */
+        .logo-box {
             position: absolute;
             top: 15px;
             right: 20px;
             z-index: 10;
         }
-        .header-logo img {
-            height: 75px; /* حجم متناسق للوغو */
+        .logo-box img {
+            height: 80px;
             width: auto;
-            border-radius: 50%; /* إطار دائري */
-            border: 2px solid #ffffff; /* داير أبيض كما طلبت */
-            background: #0a1221;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 50%;
+            border: 2px solid #ffffff; /* الداير الأبيض */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
         .header { position: relative; padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
         .dev-name { color: var(--accent-blue); font-size: 14px; font-weight: bold; margin-top: 5px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
+        /* شروط الصندوق والقائمين عليه */
         .info-section { background: var(--card-bg); border: 1px solid rgba(0,210,255,0.2); border-radius: 15px; padding: 25px; margin-bottom: 25px; line-height: 1.8; }
         .info-title { color: var(--accent-blue); border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .managers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
@@ -65,24 +65,25 @@
 
         footer { text-align: center; padding: 50px; color: #475569; font-size: 12px; }
 
-        /* استجابة الجوال */
+        /* تعديل للهاتف الصغير لكي لا يغطي اللوغو العنوان */
         @media (max-width: 600px) {
-            .header-logo { position: static; margin-bottom: 10px; display: block; text-align: center; }
-            .header-logo img { height: 60px; }
+            .logo-box { position: static; margin-bottom: 10px; }
+            .header { padding-top: 15px; }
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="header-logo">
-        <img src="Loogo.png" alt="لوغو صندوق البلالية" onerror="this.style.display='none'">
+    <div class="logo-box">
+        <img src="Loogo.png" alt="Logo">
     </div>
     <h1>صندوق البلالية الطبي</h1>
     <div class="dev-name">برمجة وتنفيذ: محمد هارون</div>
 </div>
 
 <div class="container">
+    
     <div class="info-section">
         <div class="info-title"><i class="fas fa-hand-holding-heart"></i> ميثاق الصندوق الطبي</div>
         <p style="text-align: center; font-style: italic; color: var(--accent-green);">"قال تعالى: وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ وَلَا تَعَاوَنُوا عَلَى الْإِثْمِ وَالْعُدْوَانِ"</p>
@@ -118,12 +119,14 @@
             <p><i class="fas fa-shield-alt"></i> منطقة الإدارة محمية</p>
             <input type="password" id="pass-input" placeholder="كلمة السر"> <button class="btn btn-blue" onclick="activateAdmin()">تفعيل التحكم</button>
         </div>
+        
         <div id="admin-ui" class="hidden">
             <h4 style="color:var(--accent-green);">لوحة الإدارة: محمد هارون ✅</h4>
             <div style="margin-bottom: 20px;">
                 <input type="text" id="month-name" placeholder="اسم الشهر الجديد">
                 <button class="btn btn-gold" onclick="addNewMonth()">إضافة الشهر</button>
             </div>
+            
             <div id="entry-form">
                 <select id="target-month-select"></select>
                 <input type="text" id="item-name" placeholder="الاسم / البيان">
@@ -144,17 +147,20 @@
     <button class="btn btn-toggle" onclick="toggleExpensesDisplay()">
         <i class="fas fa-eye"></i> <span id="btn-toggle-text">إظهار / إخفاء المصروفات</span>
     </button>
+
     <div id="main-content-area"></div>
 </div>
 
 <footer> Muhammed Harun 2026® </footer>
 
 <script>
+    // تم تصحيح المفاتيح هنا لضمان الربط السليم
     const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmFvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(S_URL, S_KEY);
 
-    let isEdit = false; let hideExpenses = false;
+    let isEdit = false;
+    let hideExpenses = false;
 
     async function activateAdmin() {
         if(document.getElementById('pass-input').value === 'هارون567') {
@@ -174,7 +180,13 @@
         let n = document.getElementById('month-name').value;
         if(!n) return;
         const { error } = await _db.from('months').insert([{ name: n }]);
-        if(!error) { document.getElementById('month-name').value = ''; render(); }
+        if(!error) { 
+            document.getElementById('month-name').value = ''; 
+            render(); 
+        } else {
+            console.error("Error adding month:", error);
+            alert("حدث خطأ أثناء إضافة الشهر");
+        }
     }
 
     async function saveToDB() {
@@ -186,7 +198,11 @@
 
         if(!mId || !name || !amt) return alert('أكمل البيانات');
         const { error } = await _db.from('data').insert([{ month_id: mId, name, amt, cur, type }]);
-        if(!error) { document.getElementById('item-name').value = ''; document.getElementById('item-amount').value = ''; render(); }
+        if(!error) {
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-amount').value = '';
+            render();
+        }
     }
 
     async function deleteItem(id, table) {
@@ -227,10 +243,11 @@
                 <div class="month-block">
                     <div class="month-header">
                         <span style="color:var(--accent-blue); font-weight:bold;">📅 ${m.name}</span>
-                        <button class="btn-del ${isEdit?'':'hidden'}" onclick="deleteItem(${m.id}, 'months')">حذف الشهر</button>
+                        <button class="btn-del ${isEdit?'':'hidden'}" onclick="deleteItem(${m.id}, 'months')">حذف الشهر بالكامل</button>
                     </div>
                     <div style="padding:10px;"><b>المشتركين:</b></div>
                     <table><tbody>${mRows || '<tr><td colspan="4">لا يوجد بيانات</td></tr>'}</tbody></table>
+                    
                     <div class="${hideExpenses ? 'hidden' : ''}">
                         <div style="padding:10px; background:rgba(255,0,0,0.05)"><b>المصروفات:</b></div>
                         <table><tbody>${eRows || '<tr><td colspan="4">لا يوجد مصروفات</td></tr>'}</tbody></table>
@@ -243,8 +260,9 @@
         document.getElementById('total-exp-syp').innerText = gSypOut.toLocaleString();
         document.getElementById('total-exp-usd').innerText = gUsdOut.toLocaleString();
     }
+
     render();
 </script>
 </body>
-                </html>
-                
+    </html>
+    
