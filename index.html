@@ -6,64 +6,116 @@
     <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --blue: #00d2ff; --bg: #050a18; --card: #0f172a; }
-        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 20px; }
-        input, button { padding: 12px; margin: 5px; border-radius: 8px; width: 90%; max-width: 400px; border: 1px solid #334155; }
-        button { background: var(--blue); color: black; font-weight: bold; cursor: pointer; border: none; }
-        #msg { color: #ffd700; font-weight: bold; margin: 15px; }
+        :root { --main: #00d2ff; --bg: #050a18; --card: #0f172a; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 15px; margin: 0; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 15px; }
+        input, select, button { padding: 12px; margin: 5px; border-radius: 8px; border: 1px solid #334155; font-size: 16px; width: 90%; max-width: 350px; }
+        button { cursor: pointer; background: var(--main); color: black; font-weight: bold; border: none; }
+        .hidden { display: none !important; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #1e293b; padding: 10px; }
+        #status { color: #ffd700; margin: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
-
-    <h2 style="color: var(--blue);">صندوق البلالية الطبي</h2>
-    <div id="msg">جاري فحص الاتصال...</div>
+    <h3 style="color: var(--main);">صندوق البلالية الطبي</h3>
+    <div id="status">جاري الاتصال بالسحابة...</div>
 
     <div class="card">
-        <input type="text" id="mName" placeholder="اكتب اسم الشهر (مثلاً: شباط 2026)">
-        <button onclick="addM()">إضافة الشهر الآن</button>
+        <div>الصافي (ليرة): <span id="syp" style="color:#00e676">0</span></div>
+        <div>الصافي (دولار): <span id="usd" style="color:#ffd700">0</span></div>
     </div>
 
-    <div id="list"></div>
+    <div id="login_ui">
+        <input type="password" id="pass" placeholder="كلمة السر">
+        <button onclick="doLogin()">دخول الإدارة</button>
+    </div>
+
+    <div id="admin_ui" class="hidden">
+        <div class="card">
+            <input type="text" id="m_input" placeholder="اسم الشهر (مثلاً: شباط 2026)">
+            <button onclick="addM()">إضافة الشهر</button>
+        </div>
+        <div class="card">
+            <select id="m_select"></select>
+            <input type="text" id="i_name" placeholder="الاسم / البيان">
+            <input type="number" id="i_amt" placeholder="المبلغ">
+            <select id="i_cur"><option value="SYP">ليرة</option><option value="USD">دولار</option></select>
+            <button onclick="saveItem('member')">إضافة مشترك</button>
+            <button onclick="saveItem('expense')" style="background:#ff5252; color:white">إضافة مصرف</button>
+        </div>
+    </div>
+
+    <div id="display_area"></div>
 
     <script>
-        // الربط المباشر المأخوذ من صورك
-        const S_URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
-        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        const URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
+        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
         
-        // إعدادات خاصة لتجاوز حظر المتصفح (CORS)
-        const _db = supabase.createClient(S_URL, S_KEY, {
+        // إعداد العميل بطريقة تتجاوز حظر المتصفحات
+        const _db = supabase.createClient(URL, KEY, {
             auth: { persistSession: false }
         });
 
+        function doLogin() {
+            if(document.getElementById('pass').value === 'هارون456') {
+                document.getElementById('login_ui').classList.add('hidden');
+                document.getElementById('admin_ui').classList.remove('hidden');
+                loadData();
+            } else { alert("كلمة السر خطأ"); }
+        }
+
         async function addM() {
-            const val = document.getElementById('mName').value;
-            if(!val) return;
-            
-            document.getElementById('msg').innerText = "جاري الإرسال للسحابة...";
-            
-            // محاولة الإرسال
-            const { error } = await _db.from('months').insert([{ name: val }]);
-
-            if(error) {
-                document.getElementById('msg').innerText = "فشل: " + error.message;
-            } else {
-                document.getElementById('msg').innerText = "نجح! تم إضافة " + val + " بنجاح ✅";
-                document.getElementById('mName').value = '';
-                load();
-            }
+            const n = document.getElementById('m_input').value;
+            if(!n) return;
+            document.getElementById('status').innerText = "جاري الإرسال...";
+            const { error } = await _db.from('months').insert([{name: n}]);
+            if(error) alert("فشل: " + error.message);
+            document.getElementById('m_input').value = '';
+            loadData();
         }
 
-        async function load() {
-            const { data, error } = await _db.from('months').select('*').order('id', {ascending: false});
-            if(data) {
-                document.getElementById('msg').innerText = "متصل بالسحابة ✅";
-                let h = "<h4>الأشهر المسجلة:</h4>";
-                data.forEach(m => h += `<div class='card'>${m.name}</div>`);
-                document.getElementById('list').innerHTML = h;
-            }
+        async function saveItem(type) {
+            const mid = document.getElementById('m_select').value;
+            const n = document.getElementById('i_name').value;
+            const a = document.getElementById('i_amt').value;
+            const c = document.getElementById('i_cur').value;
+            if(!mid || !n || !a) return alert("أكمل البيانات");
+            await _db.from('data').insert([{month_id: mid, name: n, amt: a, cur: c, type: type}]);
+            loadData();
         }
-        load();
+
+        async function loadData() {
+            const status = document.getElementById('status');
+            const { data: ms, error: me } = await _db.from('months').select('*').order('id', {ascending: false});
+            const { data: ds, error: de } = await _db.from('data').select('*');
+
+            if(me || de) {
+                status.innerText = "❌ فشل الاتصال (تحتاج لتنفيذ كود الـ SQL)";
+                return;
+            }
+            status.innerText = "✅ متصل بالسحابة";
+
+            const area = document.getElementById('display_area');
+            const list = document.getElementById('m_select');
+            area.innerHTML = ''; list.innerHTML = '';
+            let sTotal = 0, uTotal = 0;
+
+            ms?.forEach(m => {
+                list.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                let rows = '';
+                ds?.filter(d => d.month_id === m.id).forEach(i => {
+                    const isE = i.type === 'expense';
+                    rows += `<tr style="${isE?'color:#ff5252':''}"><td>${i.name}</td><td>${i.amt}</td><td>${i.cur}</td></tr>`;
+                    let val = isE ? -parseFloat(i.amt) : parseFloat(i.amt);
+                    if(i.cur === 'SYP') sTotal += val; else uTotal += val;
+                });
+                area.innerHTML += `<div class="card"><h4>${m.name}</h4><table>${rows || '<tr><td colspan="3">لا يوجد بيانات</td></tr>'}</table></div>`;
+            });
+            document.getElementById('syp').innerText = sTotal.toLocaleString();
+            document.getElementById('usd').innerText = uTotal.toLocaleString();
+        }
+        loadData();
     </script>
 </body>
 </html>
