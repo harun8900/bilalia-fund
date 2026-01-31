@@ -92,7 +92,7 @@
     <div class="admin-lock-zone">
         <div id="lock-ui" style="text-align: center;">
             <p><i class="fas fa-shield-alt"></i> منطقة الإدارة محمية</p>
-            <input type="password" id="pass-input" placeholder=""> <button class="btn btn-blue" onclick="activateAdmin()">تفعيل التحكم</button>
+            <input type="password" id="pass-input" placeholder="كلمة السر"> <button class="btn btn-blue" onclick="activateAdmin()">تفعيل التحكم</button>
         </div>
         
         <div id="admin-ui" class="hidden">
@@ -129,8 +129,9 @@
 <footer> Muhammed Harun 2026® </footer>
 
 <script>
+    // تم تصحيح المفاتيح هنا لضمان الربط السليم
     const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmFvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(S_URL, S_KEY);
 
     let isEdit = false;
@@ -154,7 +155,13 @@
         let n = document.getElementById('month-name').value;
         if(!n) return;
         const { error } = await _db.from('months').insert([{ name: n }]);
-        if(!error) { document.getElementById('month-name').value = ''; render(); }
+        if(!error) { 
+            document.getElementById('month-name').value = ''; 
+            render(); 
+        } else {
+            console.error("Error adding month:", error);
+            alert("حدث خطأ أثناء إضافة الشهر");
+        }
     }
 
     async function saveToDB() {
