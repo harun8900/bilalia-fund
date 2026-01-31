@@ -3,59 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>صندوق البلالية</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
     <style>
         body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
-        .card { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 15px; }
-        input, button { padding: 12px; width: 90%; border-radius: 8px; font-size: 16px; margin: 5px; border: none; outline: none; }
+        .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
+        input, button { padding: 12px; width: 85%; border-radius: 8px; font-size: 16px; margin: 10px; border: none; }
         button { background: #00d2ff; color: black; font-weight: bold; cursor: pointer; }
-        #status { color: #ffd700; margin: 15px; font-weight: bold; }
+        #log { color: #ff4444; font-size: 12px; margin-top: 20px; text-align: left; direction: ltr; background: #000; padding: 10px; border-radius: 5px; display: none; }
     </style>
 </head>
 <body>
     <h3>صندوق البلالية الطبي</h3>
-    <div id="status">جاري الاتصال بقاعدة البيانات...</div>
-    
+    <div id="status" style="color: #ffd700;">جاري محاولة الاتصال...</div>
+
     <div class="card">
-        <input type="text" id="m_input" placeholder="اكتب اسم الشهر هنا">
-        <button onclick="addM()">إضافة الشهر الآن</button>
+        <input type="text" id="mInput" placeholder="اكتب اسم الشهر">
+        <button onclick="sendData()">إرسال البيانات</button>
     </div>
-    
-    <div id="list"></div>
+
+    <div id="log"></div>
 
     <script>
-        // البيانات التي أرسلتها أنت (مطابقة 100%)
-        const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co"; 
-        const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+        // استخدام البيانات التي أكدت أنت صحتها منطقياً
+        const supabaseUrl = 'https://xuiwkvkrhatcoovfozsq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os';
         
-        const _db = supabase.createClient(URL, KEY);
+        const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function load() {
-            const { data, error } = await _db.from('months').select('*');
-            if (error) {
-                document.getElementById('status').innerText = "❌ خطأ في الربط: " + error.message;
-            } else {
-                document.getElementById('status').innerText = "✅ تم الربط بنجاح (السيرفر متصل)";
-                let h = "";
-                data?.forEach(m => h += `<div class='card'>${m.name}</div>`);
-                document.getElementById('list').innerHTML = h;
-            }
-        }
-
-        async function addM() {
-            const val = document.getElementById('m_input').value;
+        async function sendData() {
+            const val = document.getElementById('mInput').value;
             if(!val) return;
-            document.getElementById('status').innerText = "⏳ جاري الإرسال...";
-            const { error } = await _db.from('months').insert([{ name: val }]);
-            if(error) {
-                alert("تعذر الإرسال: " + error.message);
-            } else {
-                document.getElementById('m_input').value = '';
-                load();
+
+            document.getElementById('status').innerText = "⏳ جاري محاولة الربط...";
+            
+            try {
+                const { data, error } = await client.from('months').insert([{ name: val }]);
+                
+                if (error) {
+                    showError("Error: " + error.message + " | Code: " + error.code);
+                } else {
+                    document.getElementById('status').innerText = "✅ نجح الربط والحفظ!";
+                    alert("تمت الإضافة!");
+                }
+            } catch (err) {
+                showError("Crash: " + err.message);
             }
         }
-        load();
+
+        function showError(msg) {
+            document.getElementById('status').innerText = "❌ فشل الربط";
+            const log = document.getElementById('log');
+            log.style.display = "block";
+            log.innerText = msg;
+        }
+
+        // اختبار الاتصال فور فتح الصفحة
+        (async () => {
+            const { error } = await client.from('months').select('id').limit(1);
+            if (error) showError("Connection Check Failed: " + error.message);
+            else document.getElementById('status').innerText = "✅ السيرفر مستعد للعمل";
+        })();
     </script>
 </body>
 </html>
