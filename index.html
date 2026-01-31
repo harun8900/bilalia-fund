@@ -8,16 +8,34 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-body: #050a18;
-            --card-bg: #0f172a;
+            /* تعديل الألوان لتناسب اللوجو */
+            --bg-body: #0a1221; 
+            --card-bg: #111d2f;
             --accent-blue: #00d2ff;
-            --accent-green: #00e676;
+            --accent-green: #7eb942;
             --danger: #ff5252;
-            --gold: #ffd700;
+            --gold: #f0ad4e;
             --text-dim: #94a3b8;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-body); color: white; margin: 0; padding: 0; }
-        .header { padding: 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
+        
+        /* تنسيق اللوجو في الزاوية اليمنى العليا */
+        .top-right-logo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+        .top-right-logo img {
+            height: 80px; /* حجم مناسب للزاوية */
+            width: auto;
+            border-radius: 50%;
+            border: 2px solid white; /* الداير الأبيض */
+            background: var(--bg-body);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .header { padding: 40px 30px; text-align: center; background: linear-gradient(180deg, #111a2e 0%, var(--bg-body) 100%); border-bottom: 2px solid var(--accent-blue); }
         .dev-name { color: var(--accent-blue); font-size: 14px; font-weight: bold; margin-top: 5px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
@@ -48,9 +66,18 @@
         td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
 
         footer { text-align: center; padding: 50px; color: #475569; font-size: 12px; }
+
+        @media (max-width: 600px) {
+            .top-right-logo { position: relative; top: 0; right: 0; margin-bottom: 10px; }
+            .header { padding-top: 20px; }
+        }
     </style>
 </head>
 <body>
+
+<div class="top-right-logo">
+    <img src="loogo.png" alt="Logo" onerror="this.style.display='none'">
+</div>
 
 <div class="header">
     <h1>صندوق البلالية الطبي</h1>
@@ -58,7 +85,6 @@
 </div>
 
 <div class="container">
-    
     <div class="info-section">
         <div class="info-title"><i class="fas fa-hand-holding-heart"></i> ميثاق الصندوق الطبي</div>
         <p style="text-align: center; font-style: italic; color: var(--accent-green);">"قال تعالى: وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ وَلَا تَعَاوَنُوا عَلَى الْإِثْمِ وَالْعُدْوَانِ"</p>
@@ -82,7 +108,7 @@
         <p style="text-align: center; margin-top: 15px; color: var(--gold); font-weight: bold;">(نسأل الله التوفيق)</p>
     </div>
 
-    <div class="dashboard">
+    <div class="dashboard" id="stat-summary">
         <div class="stat-card">الرصيد الكلي (ليرة) <span id="total-syp-val" style="color:var(--accent-green)">0</span></div>
         <div class="stat-card">الرصيد الكلي (دولار) <span id="total-usd-val" style="color:var(--gold)">0</span></div>
         <div class="stat-card">إجمالي المصروفات (ليرة) <span id="total-exp-syp" style="color:var(--danger)">0</span></div>
@@ -129,9 +155,9 @@
 <footer> Muhammed Harun 2026® </footer>
 
 <script>
-    // تم تصحيح المفاتيح هنا لضمان الربط السليم
+    // الرابط والمفاتيح الصحيحة
     const S_URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmFvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(S_URL, S_KEY);
 
     let isEdit = false;
@@ -155,13 +181,7 @@
         let n = document.getElementById('month-name').value;
         if(!n) return;
         const { error } = await _db.from('months').insert([{ name: n }]);
-        if(!error) { 
-            document.getElementById('month-name').value = ''; 
-            render(); 
-        } else {
-            console.error("Error adding month:", error);
-            alert("حدث خطأ أثناء إضافة الشهر");
-        }
+        if(!error) { document.getElementById('month-name').value = ''; render(); }
     }
 
     async function saveToDB() {
