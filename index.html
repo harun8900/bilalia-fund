@@ -9,21 +9,20 @@
         :root { --main: #00d2ff; --bg: #050a18; --card: #0f172a; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 15px; margin: 0; }
         .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 15px; }
-        input, select, button { padding: 12px; margin: 5px; border-radius: 8px; border: 1px solid #334155; font-size: 16px; width: 90%; max-width: 350px; }
+        input, select, button { padding: 12px; margin: 5px; border-radius: 8px; border: 1px solid #334155; width: 90%; font-size: 16px; outline: none; }
         button { cursor: pointer; background: var(--main); color: black; font-weight: bold; border: none; }
         .hidden { display: none !important; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #1e293b; padding: 10px; }
-        #status { color: #ffd700; margin: 10px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td { border: 1px solid #1e293b; padding: 10px; }
+        #status { color: #ffd700; font-size: 14px; margin: 10px; }
     </style>
 </head>
 <body>
     <h3 style="color: var(--main);">صندوق البلالية الطبي</h3>
-    <div id="status">جاري الاتصال بالسحابة...</div>
+    <div id="status">جاري فحص الاتصال...</div>
 
     <div class="card">
-        <div>الصافي (ليرة): <span id="syp" style="color:#00e676">0</span></div>
-        <div>الصافي (دولار): <span id="usd" style="color:#ffd700">0</span></div>
+        الصافي: <span id="syp" style="color:#00e676">0</span> ل.س | <span id="usd" style="color:#ffd700">0</span> $
     </div>
 
     <div id="login_ui">
@@ -52,9 +51,9 @@
         const URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
         const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
         
-        // إعداد العميل بطريقة تتجاوز حظر المتصفحات
+        // ربط السحاب مع إعدادات تجاوز الأمان
         const _db = supabase.createClient(URL, KEY, {
-            auth: { persistSession: false }
+            global: { headers: { 'x-my-custom-header': 'my-app' } }
         });
 
         function doLogin() {
@@ -68,10 +67,8 @@
         async function addM() {
             const n = document.getElementById('m_input').value;
             if(!n) return;
-            document.getElementById('status').innerText = "جاري الإرسال...";
             const { error } = await _db.from('months').insert([{name: n}]);
             if(error) alert("فشل: " + error.message);
-            document.getElementById('m_input').value = '';
             loadData();
         }
 
@@ -86,20 +83,16 @@
         }
 
         async function loadData() {
-            const status = document.getElementById('status');
-            const { data: ms, error: me } = await _db.from('months').select('*').order('id', {ascending: false});
-            const { data: ds, error: de } = await _db.from('data').select('*');
+            const { data: ms, error: me } = await _db.from('months').select('*');
+            const { data: ds } = await _db.from('data').select('*');
 
-            if(me || de) {
-                status.innerText = "❌ فشل الاتصال (تحتاج لتنفيذ كود الـ SQL)";
-                return;
-            }
-            status.innerText = "✅ متصل بالسحابة";
+            if(me) { document.getElementById('status').innerText = "❌ فشل الاتصال بالسحابة"; return; }
+            document.getElementById('status').innerText = "✅ متصل بالسحابة";
 
             const area = document.getElementById('display_area');
             const list = document.getElementById('m_select');
             area.innerHTML = ''; list.innerHTML = '';
-            let sTotal = 0, uTotal = 0;
+            let sT = 0, uT = 0;
 
             ms?.forEach(m => {
                 list.innerHTML += `<option value="${m.id}">${m.name}</option>`;
@@ -107,13 +100,13 @@
                 ds?.filter(d => d.month_id === m.id).forEach(i => {
                     const isE = i.type === 'expense';
                     rows += `<tr style="${isE?'color:#ff5252':''}"><td>${i.name}</td><td>${i.amt}</td><td>${i.cur}</td></tr>`;
-                    let val = isE ? -parseFloat(i.amt) : parseFloat(i.amt);
-                    if(i.cur === 'SYP') sTotal += val; else uTotal += val;
+                    let v = isE ? -parseFloat(i.amt) : parseFloat(i.amt);
+                    if(i.cur === 'SYP') sT += v; else uT += v;
                 });
-                area.innerHTML += `<div class="card"><h4>${m.name}</h4><table>${rows || '<tr><td colspan="3">لا يوجد بيانات</td></tr>'}</table></div>`;
+                area.innerHTML += `<div class="card"><h4>${m.name}</h4><table>${rows}</table></div>`;
             });
-            document.getElementById('syp').innerText = sTotal.toLocaleString();
-            document.getElementById('usd').innerText = uTotal.toLocaleString();
+            document.getElementById('syp').innerText = sT.toLocaleString();
+            document.getElementById('usd').innerText = uT.toLocaleString();
         }
         loadData();
     </script>
