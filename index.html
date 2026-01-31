@@ -6,60 +6,51 @@
     <title>صندوق البلالية الطبي</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --blue: #00d2ff; --bg: #050a18; --card: #0f172a; }
-        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 20px; }
-        input, button { padding: 12px; margin: 5px; border-radius: 8px; width: 90%; max-width: 400px; border: 1px solid #334155; }
-        button { background: var(--blue); color: black; font-weight: bold; cursor: pointer; border: none; }
-        #msg { color: #ffd700; font-weight: bold; margin: 15px; }
+        :root { --main: #00d2ff; --bg: #050a18; --card: #0f172a; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; padding: 15px; margin: 0; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 15px; }
+        input, button { padding: 12px; margin: 5px; border-radius: 8px; width: 90%; font-size: 16px; border: none; }
+        button { cursor: pointer; background: var(--main); color: black; font-weight: bold; }
+        #status { color: #ffd700; font-size: 14px; margin: 10px; }
     </style>
 </head>
 <body>
-
-    <h2 style="color: var(--blue);">صندوق البلالية الطبي</h2>
-    <div id="msg">جاري فحص الاتصال...</div>
+    <h3>صندوق البلالية الطبي</h3>
+    <div id="status">جاري الاتصال...</div>
 
     <div class="card">
-        <input type="text" id="mName" placeholder="اكتب اسم الشهر (مثلاً: شباط 2026)">
-        <button onclick="addM()">إضافة الشهر الآن</button>
+        <input type="text" id="m_name" placeholder="اسم الشهر (مثال: شباط 2026)">
+        <button onclick="addM()">إضافة الشهر</button>
     </div>
 
     <div id="list"></div>
 
     <script>
-        // الربط المباشر المأخوذ من صورك
-        const S_URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
-        const S_KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
-        
-        // إعدادات خاصة لتجاوز حظر المتصفح (CORS)
-        const _db = supabase.createClient(S_URL, S_KEY, {
-            auth: { persistSession: false }
-        });
+        const URL = "https://xuiwkvrhatcoovfozsq.supabase.co";
+        const KEY = "sb_publishable_T2ltCUtwwPR4b_Oh_dOPFQ_qfcCmFfM";
+        const _db = supabase.createClient(URL, KEY);
 
         async function addM() {
-            const val = document.getElementById('mName').value;
-            if(!val) return;
-            
-            document.getElementById('msg').innerText = "جاري الإرسال للسحابة...";
-            
-            // محاولة الإرسال
-            const { error } = await _db.from('months').insert([{ name: val }]);
-
+            const n = document.getElementById('m_name').value;
+            if(!n) return;
+            document.getElementById('status').innerText = "جاري الإرسال...";
+            const { error } = await _db.from('months').insert([{name: n}]);
             if(error) {
-                document.getElementById('msg').innerText = "فشل: " + error.message;
+                alert("فشل: " + error.message);
             } else {
-                document.getElementById('msg').innerText = "نجح! تم إضافة " + val + " بنجاح ✅";
-                document.getElementById('mName').value = '';
+                document.getElementById('m_name').value = '';
                 load();
             }
         }
 
         async function load() {
-            const { data, error } = await _db.from('months').select('*').order('id', {ascending: false});
-            if(data) {
-                document.getElementById('msg').innerText = "متصل بالسحابة ✅";
-                let h = "<h4>الأشهر المسجلة:</h4>";
-                data.forEach(m => h += `<div class='card'>${m.name}</div>`);
+            const { data, error } = await _db.from('months').select('*');
+            if(error) {
+                document.getElementById('status').innerText = "❌ فشل: تأكد من تشغيل SQL";
+            } else {
+                document.getElementById('status').innerText = "✅ متصل ومستعد";
+                let h = "";
+                data.forEach(m => h += `<div class="card">${m.name}</div>`);
                 document.getElementById('list').innerHTML = h;
             }
         }
