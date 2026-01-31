@@ -3,99 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية الطبي - الإدارة</title>
+    <title>صندوق البلالية الطبي | بإشراف محمد هارون</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #00d2ff; --bg: #050a18; --card: #0f172a; --text: #f8fafc; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        input, select { padding: 12px; width: 90%; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
-        button { padding: 12px; width: 95%; background: var(--primary); color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
-        .admin-only { display: none; } /* مخفي عن الزوار */
-        .list-item { background: #1e293b; padding: 15px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; }
-        .delete-btn { background: #ff4444; width: auto; padding: 5px 10px; color: white; font-size: 12px; }
-        .footer { font-size: 12px; margin-top: 40px; opacity: 0.8; border-top: 1px solid #334155; padding-top: 10px; }
+        :root { --primary: #00d2ff; --secondary: #0081a7; --bg: #050a18; --card-bg: #0f172a; --accent: #4ade80; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 10px; }
+        .container { max-width: 800px; margin: auto; }
+        
+        /* الإحصائيات العلوية */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: linear-gradient(135deg, #0f172a, #1e293b); padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); text-align: center; }
+        .stat-card h5 { margin: 0; font-size: 12px; opacity: 0.8; }
+        .stat-card p { margin: 5px 0 0; font-size: 18px; font-weight: bold; color: var(--primary); }
+
+        /* الأقسام */
+        .section { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #1e293b; }
+        .section-title { color: var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        /* القوانين والقائمون */
+        .info-list { font-size: 13px; line-height: 1.6; text-align: right; padding-right: 20px; }
+        .admin-list { list-style: none; padding: 0; font-size: 14px; }
+        .admin-list li { padding: 8px; border-bottom: 1px solid #1e293b; }
+
+        /* لوحة التحكم */
+        input, select { padding: 12px; width: 100%; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-lock { background: #334155; color: white; margin-top: 10px; }
+        .admin-content { display: none; margin-top: 15px; border-top: 2px dashed var(--primary); padding-top: 15px; }
+
+        /* جدول المشتركين */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        th { background: #1e293b; color: var(--primary); padding: 10px; text-align: right; }
+        td { padding: 10px; border-bottom: 1px solid #1e293b; }
+        .type-in { color: var(--accent); }
+        .type-out { color: #fb7185; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>صندوق البلالية الطبي</h2>
-    
-    <div id="loginArea" class="card">
-        <input type="password" id="passInput" placeholder="أدخل كلمة مرور الإدارة للتحكم">
-        <button onclick="checkAdmin()">دخول المسؤول</button>
+    <header style="text-align: center; padding: 20px 0;">
+        <h2 style="margin: 0;">صندوق البلالية الطبي</h2>
+        <p style="font-size: 12px; opacity: 0.7;">برمجة وتنفيذ: محمد هارون</p>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h5>إجمالي المشتركين</h5>
+            <p id="totalUsers">0</p>
+        </div>
+        <div class="stat-card">
+            <h5>الرصيد الكلي</h5>
+            <p id="totalBalance">0 $</p>
+        </div>
     </div>
 
-    <div id="status" style="color: #ffd700; margin-bottom: 10px;">نمط المشاهدة فقط 👁️</div>
-
-    <hr style="border: 0.5px solid #334155; margin: 20px 0;">
-
-    <div id="adminPanel" class="admin-only card">
-        <h4 style="color: var(--primary);">لوحة تحكم محمد هارون 🛠️</h4>
-        <input type="text" id="monthName" placeholder="إضافة شهر جديد">
-        <button onclick="addNewMonth()">إضافة الشهر</button>
+    <div class="section">
+        <div class="section-title">🛡️ نبذة عن المشروع وأهدافه</div>
+        <div class="info-list">
+            <p>قال تعالى: (وتعاونوا على البر والتقوى). هذا الصندوق لمساعدة أهلنا في الحالات الطارئة.</p>
+            <b>قوانين الصندوق:</b>
+            <ul>
+                <li>تغطية حالات: وفاة - عمليات - حوادث طارئة.</li>
+                <li>الدفع شهري، بحد أدنى 25 ألف ل.س.</li>
+            </ul>
+        </div>
     </div>
 
-    <div id="monthsList"></div>
+    <div class="section">
+        <div class="section-title">👥 القائمون على الإدارة</div>
+        <ul class="admin-list">
+            <li>قاسم طالب | رامي باكير | حسن الخطيب</li>
+            <li>هيام شحادة | نورس عبد السلام | محمد قويدر</li>
+        </ul>
+    </div>
 
-    <div class="footer">
-        <p>برمجة وتنفيذ: <b>محمد هارون</b> - باحترافية متكاملة</p>
-        <p>الشروط: المشاهدة متاحة للجميع، التحكم للمفوضين فقط.</p>
+    <div class="section" id="adminSection">
+        <div class="section-title">🔐 لوحة الإدارة الآمنة</div>
+        <input type="password" id="adminPass" placeholder="أدخل كلمة المرور لتفعيل الصلاحيات">
+        <button class="btn btn-primary" onclick="unlockAdmin()">تفعيل الصلاحيات</button>
+        
+        <div id="adminControls" class="admin-content">
+            <h5>أهلاً محمد هارون - لوحة التحكم مفعلة</h5>
+            <input type="text" id="newMonth" placeholder="اسم الشهر الجديد">
+            <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="addMonth()">إضافة شهر</button>
+            
+            <hr>
+            
+            <select id="monthSelect"></select>
+            <input type="text" id="userName" placeholder="اسم المشترك أو البيان">
+            <input type="number" id="amount" placeholder="المبلغ">
+            <select id="type">
+                <option value="توفير">توفير (+)</option>
+                <option value="مصروف">مصروف (-)</option>
+            </select>
+            <button class="btn btn-primary" onclick="addData()">إضافة البيانات</button>
+            <button class="btn btn-lock" onclick="location.reload()">قفل الصلاحيات</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">📅 سجل المشتركين والعمليات</div>
+        <select id="viewFilter" onchange="loadTableData()"></select>
+        <table>
+            <thead>
+                <tr>
+                    <th>المشترك/البيان</th>
+                    <th>المبلغ</th>
+                    <th>النوع</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody"></tbody>
+        </table>
     </div>
 </div>
 
 <script>
+    // البيانات الناجحة
     const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
     const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
     const _db = supabase.createClient(URL, KEY);
 
-    // كلمة المرور الخاصة بك (يمكنك تغييرها من هنا)
-    const MY_PASSWORD = "123"; 
+    // كلمة المرور الافتراضية
+    const ADMIN_KEY = "123";
 
-    function checkAdmin() {
-        const pass = document.getElementById('passInput').value;
-        if(pass === MY_PASSWORD) {
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-            document.getElementById('loginArea').style.display = 'none';
-            document.getElementById('status').innerText = "✅ نمط الإدارة مفعل - أهلاً محمد هارون";
-            loadMonths(true); // تحميل مع أزرار الحذف
-        } else {
-            alert("كلمة مرور خاطئة!");
-        }
+    function unlockAdmin() {
+        if(document.getElementById('adminPass').value === ADMIN_KEY) {
+            document.getElementById('adminControls').style.display = 'block';
+            document.getElementById('adminPass').style.display = 'none';
+            alert("مرحباً محمد هارون، تم فتح الصلاحيات");
+        } else { alert("كلمة المرور خاطئة"); }
     }
 
-    async function loadMonths(isAdmin = false) {
-        const { data, error } = await _db.from('months').select('*').order('id', { ascending: false });
-        if(error) return;
+    async function loadInitial() {
+        const { data: months } = await _db.from('months').select('*').order('id', {ascending: false});
+        let options = "";
+        months.forEach(m => options += `<option value="${m.id}">${m.name}</option>`);
+        document.getElementById('monthSelect').innerHTML = options;
+        document.getElementById('viewFilter').innerHTML = options;
+        loadTableData();
+        updateStats();
+    }
 
-        let html = "<h4>الأشهر المسجلة:</h4>";
-        data.forEach(m => {
-            html += `<div class="list-item">
-                        <span>📅 ${m.name}</span>
-                        ${isAdmin ? `<button class="delete-btn" onclick="deleteMonth('${m.id}')">حذف</button>` : ''}
-                    </div>`;
+    async function addMonth() {
+        const name = document.getElementById('newMonth').value;
+        await _db.from('months').insert([{ name }]);
+        location.reload();
+    }
+
+    async function addData() {
+        const mid = document.getElementById('monthSelect').value;
+        const name = document.getElementById('userName').value;
+        const amt = document.getElementById('amount').value;
+        const type = document.getElementById('type').value;
+        
+        const { error } = await _db.from('data').insert([{ month_id: mid, name, amt, type }]);
+        if(!error) { alert("تمت الإضافة بنجاح"); loadTableData(); updateStats(); }
+    }
+
+    async function loadTableData() {
+        const mid = document.getElementById('viewFilter').value;
+        const { data } = await _db.from('data').select('*').eq('month_id', mid);
+        let rows = "";
+        data.forEach(d => {
+            rows += `<tr>
+                <td>${d.name}</td>
+                <td>${d.amt}</td>
+                <td class="${d.type === 'توفير' ? 'type-in' : 'type-out'}">${d.type}</td>
+            </tr>`;
         });
-        document.getElementById('monthsList').innerHTML = html;
+        document.getElementById('dataTableBody').innerHTML = rows;
     }
 
-    async function addNewMonth() {
-        const name = document.getElementById('monthName').value;
-        if(!name) return;
-        const { error } = await _db.from('months').insert([{ name }]);
-        if(!error) { document.getElementById('monthName').value = ''; loadMonths(true); }
+    async function updateStats() {
+        const { data } = await _db.from('data').select('amt, type');
+        let total = 0;
+        let users = new Set();
+        data.forEach(d => {
+            if(d.type === 'توفير') {
+                total += parseFloat(d.amt);
+                users.add(d.name);
+            } else {
+                total -= parseFloat(d.amt);
+            }
+        });
+        document.getElementById('totalBalance').innerText = total + " $";
+        document.getElementById('totalUsers').innerText = users.size;
     }
 
-    async function deleteMonth(id) {
-        if(!confirm("هل أنت متأكد من حذف هذا الشهر وكافة بياناته؟")) return;
-        const { error } = await _db.from('months').delete().eq('id', id);
-        if(!error) loadMonths(true);
-    }
-
-    // تشغيل وضع المشاهدة عند الفتح
-    loadMonths(false);
+    loadInitial();
 </script>
-
 </body>
-</html>
+    </html>
+    
