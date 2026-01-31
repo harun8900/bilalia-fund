@@ -3,67 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صندوق البلالية</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+    <title>صندوق البلالية الطبي - الإدارة</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #050a18; color: white; text-align: center; padding: 20px; }
-        .card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 20px; }
-        input, button { padding: 12px; width: 85%; border-radius: 8px; font-size: 16px; margin: 10px; border: none; }
-        button { background: #00d2ff; color: black; font-weight: bold; cursor: pointer; }
-        #log { color: #ff4444; font-size: 12px; margin-top: 20px; text-align: left; direction: ltr; background: #000; padding: 10px; border-radius: 5px; display: none; }
+        :root { --primary: #00d2ff; --bg: #050a18; --card: #0f172a; --text: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        input, select { padding: 12px; width: 90%; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
+        button { padding: 12px; width: 95%; background: var(--primary); color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        .admin-only { display: none; } /* مخفي عن الزوار */
+        .list-item { background: #1e293b; padding: 15px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; }
+        .delete-btn { background: #ff4444; width: auto; padding: 5px 10px; color: white; font-size: 12px; }
+        .footer { font-size: 12px; margin-top: 40px; opacity: 0.8; border-top: 1px solid #334155; padding-top: 10px; }
     </style>
 </head>
 <body>
-    <h3>صندوق البلالية الطبي</h3>
-    <div id="status" style="color: #ffd700;">جاري محاولة الاتصال...</div>
 
-    <div class="card">
-        <input type="text" id="mInput" placeholder="اكتب اسم الشهر">
-        <button onclick="sendData()">إرسال البيانات</button>
+<div class="container">
+    <h2>صندوق البلالية الطبي</h2>
+    
+    <div id="loginArea" class="card">
+        <input type="password" id="passInput" placeholder="أدخل كلمة مرور الإدارة للتحكم">
+        <button onclick="checkAdmin()">دخول المسؤول</button>
     </div>
 
-    <div id="log"></div>
+    <div id="status" style="color: #ffd700; margin-bottom: 10px;">نمط المشاهدة فقط 👁️</div>
 
-    <script>
-        // استخدام البيانات التي أكدت أنت صحتها منطقياً
-        const supabaseUrl = 'https://xuiwkvkrhatcoovfozsq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os';
-        
-        const client = supabase.createClient(supabaseUrl, supabaseKey);
+    <hr style="border: 0.5px solid #334155; margin: 20px 0;">
 
-        async function sendData() {
-            const val = document.getElementById('mInput').value;
-            if(!val) return;
+    <div id="adminPanel" class="admin-only card">
+        <h4 style="color: var(--primary);">لوحة تحكم محمد هارون 🛠️</h4>
+        <input type="text" id="monthName" placeholder="إضافة شهر جديد">
+        <button onclick="addNewMonth()">إضافة الشهر</button>
+    </div>
 
-            document.getElementById('status').innerText = "⏳ جاري محاولة الربط...";
-            
-            try {
-                const { data, error } = await client.from('months').insert([{ name: val }]);
-                
-                if (error) {
-                    showError("Error: " + error.message + " | Code: " + error.code);
-                } else {
-                    document.getElementById('status').innerText = "✅ نجح الربط والحفظ!";
-                    alert("تمت الإضافة!");
-                }
-            } catch (err) {
-                showError("Crash: " + err.message);
-            }
+    <div id="monthsList"></div>
+
+    <div class="footer">
+        <p>برمجة وتنفيذ: <b>محمد هارون</b> - باحترافية متكاملة</p>
+        <p>الشروط: المشاهدة متاحة للجميع، التحكم للمفوضين فقط.</p>
+    </div>
+</div>
+
+<script>
+    const URL = "https://xuiwkvkrhatcoovfozsq.supabase.co";
+    const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1aXdrdmtyaGF0Y29vdmZvenNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzA0NzYsImV4cCI6MjA4NTQ0NjQ3Nn0.Bp0ZyYi8O95jZhtALxxJwK6MQWau1WGGaBoUes5f3os";
+    const _db = supabase.createClient(URL, KEY);
+
+    // كلمة المرور الخاصة بك (يمكنك تغييرها من هنا)
+    const MY_PASSWORD = "123"; 
+
+    function checkAdmin() {
+        const pass = document.getElementById('passInput').value;
+        if(pass === MY_PASSWORD) {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('status').innerText = "✅ نمط الإدارة مفعل - أهلاً محمد هارون";
+            loadMonths(true); // تحميل مع أزرار الحذف
+        } else {
+            alert("كلمة مرور خاطئة!");
         }
+    }
 
-        function showError(msg) {
-            document.getElementById('status').innerText = "❌ فشل الربط";
-            const log = document.getElementById('log');
-            log.style.display = "block";
-            log.innerText = msg;
-        }
+    async function loadMonths(isAdmin = false) {
+        const { data, error } = await _db.from('months').select('*').order('id', { ascending: false });
+        if(error) return;
 
-        // اختبار الاتصال فور فتح الصفحة
-        (async () => {
-            const { error } = await client.from('months').select('id').limit(1);
-            if (error) showError("Connection Check Failed: " + error.message);
-            else document.getElementById('status').innerText = "✅ السيرفر مستعد للعمل";
-        })();
-    </script>
+        let html = "<h4>الأشهر المسجلة:</h4>";
+        data.forEach(m => {
+            html += `<div class="list-item">
+                        <span>📅 ${m.name}</span>
+                        ${isAdmin ? `<button class="delete-btn" onclick="deleteMonth('${m.id}')">حذف</button>` : ''}
+                    </div>`;
+        });
+        document.getElementById('monthsList').innerHTML = html;
+    }
+
+    async function addNewMonth() {
+        const name = document.getElementById('monthName').value;
+        if(!name) return;
+        const { error } = await _db.from('months').insert([{ name }]);
+        if(!error) { document.getElementById('monthName').value = ''; loadMonths(true); }
+    }
+
+    async function deleteMonth(id) {
+        if(!confirm("هل أنت متأكد من حذف هذا الشهر وكافة بياناته؟")) return;
+        const { error } = await _db.from('months').delete().eq('id', id);
+        if(!error) loadMonths(true);
+    }
+
+    // تشغيل وضع المشاهدة عند الفتح
+    loadMonths(false);
+</script>
+
 </body>
 </html>
